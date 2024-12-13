@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>Update Material: {{ object.name }}</h2>
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Update Material</button>
+  </form>
+
+  {% if messages %}
+    <div class="alert alert-success mt-3">
+      {% for message in messages %}
+        <p>{{ message }}</p>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endblock %}

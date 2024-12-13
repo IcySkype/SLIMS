@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard - Lab Technician{% endblock %}
+{% load static %}
+{% block extra_styles %}
+<link rel="stylesheet" href="{% static 'css/styles-labtech.css' %}">
+{% endblock %}
+{% block content %}
+<div class="dashboard-grid">
+    <div class="card">
+        <h3>Class Schedule</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Material</th>
+                    <th>Type</th>
+                    <th>Time</th>
+                    <th>Date</th>
+                    <th>Data</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Table rows for class schedule -->
+            </tbody>
+        </table>
+    </div>
+    <div class="card calendar">
+        <h3>March 2023</h3>
+        <p>Calendar goes here...</p>
+    </div>
+    <div class="card request-overview">
+        <h3>Request Overview</h3>
+        <p>Overview details here...</p>
+    </div>
+</div>
+{% endblock %}

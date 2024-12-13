@@ -1,0 +1,322 @@
+/* General body styling */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-image: url('pi.jpg');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: 100% 100%;
+    position: fixed;
+}
+
+/* Navigation bar styling */
+nav {
+    background-color: white; /* White background for the navbar */
+    height: 60px;
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 5px 5px 20px gray;
+}
+
+.nav-title {
+    margin-top: 15px;
+    font-size: 25px;
+    font-weight: bolder;
+    color: #FF6289;
+    position: fixed;
+}
+
+/* Content area */
+.content {
+    padding: 20px;
+    text-align: center;
+    margin-left: 270px; /* Space for the sidebar */
+    min-height: 100vh;
+}
+
+/* Wrapper for flex layout */
+.wrapper {
+    display: flex;
+    height: calc(100vh - 60px); /* Full height minus the navbar height */
+}
+
+/* Sidebar navigation styling */
+.sidebar {
+    background-color: white;
+    width: 150px;
+    height: 100%;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 60px;
+    z-index: 99;
+    padding: 20px 0;
+}
+
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar ul li {
+    padding: 15px 20px;
+    font-size: 12px;
+    font-weight: bold;
+    color: black;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.sidebar ul li a {
+    text-decoration: none;
+    color: black;
+    display: flex;
+    align-items: center;
+}
+
+.sidebar ul li.active a {
+    color: #FF6289;
+}
+
+.sidebar ul li:hover {
+    background-color: #f0f0f0;
+}
+
+.sidebar li i {
+    margin-right: 15px;
+    font-size: 14px;
+}
+
+/* Logo styling */
+.logo {
+    margin-top: 5px;
+    height: 50px;
+    margin-right: 15px;
+    margin-left: 15px;
+    position: sticky;
+}
+
+/* Logout styling */
+.logout {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.logout li {
+    padding: 15px 20px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 140px;
+}
+
+.logout li:hover {
+    background-color: #f0f0f0;
+}
+
+.logout li i {
+    margin-right: 15px;
+    font-size: 15px;
+}
+
+/* Dashboard grid layout */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 equal columns */
+    grid-gap: 20px;
+}
+
+/* Card styling */
+.card {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Table styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table th, table td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
+
+table th {
+    background-color: #f1f1f1;
+}
+
+/* Card layout for request and overview */
+.card1 {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 20px;
+    width: 80%;
+}
+
+.card1 h3 {
+    margin-bottom: 20px;
+}
+
+/* Search and edit buttons */
+.search-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.search-input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px 0 0 5px;
+}
+
+.search-button, .edit-button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 0 5px 5px 0;
+    background-color: #007BFF;
+    color: white;
+    cursor: pointer;
+}
+
+.search-button:hover, .edit-button:hover {
+    background-color: #0056b3;
+}
+
+/* Request list container styling */
+.request-list-container {
+    width: 82%;
+    margin: auto;
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Request list actions */
+.request-list-actions button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 10px;
+    font-size: 14px;
+}
+
+.request-list-actions button:hover {
+    background-color: #0056b3;
+}
+
+/* Status badges */
+.status {
+    padding: 5px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.status.approved {
+    background-color: #28a745;
+    color: white;
+}
+
+.status.declined {
+    background-color: #dc3545;
+    color: white;
+}
+
+.status.pending {
+    background-color: #ffc107;
+    color: black;
+}
+
+/* Pagination styling */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.pagination-btn {
+    padding: 8px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.pagination-btn:hover {
+    background-color: #0056b3;
+}
+
+.pagination span {
+    font-size: 14px;
+    color: #333;
+}
+
+/* Form layout for register page */
+.register-form {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+input {
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 90%;
+}
+
+.register-btn {
+    background-color: #FF6289;
+    color: white;
+    border: none;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    grid-column: span 2;
+}
+
+.register-btn:hover {
+    background-color: #e85779;
+}
+
+/* Main content area */
+.main-content {
+    margin-left: 170px; /* Adjusted margin to give space for the sidebar */
+    padding: 20px;
+    min-height: 100vh;
+    background-color: #f9f9f9;
+    box-sizing: border-box;
+}

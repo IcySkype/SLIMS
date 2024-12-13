@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SciLab{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/Matgown.css' %}">
+    {% block extra_styles %}
+    {% endblock %}
+</head>
+<body>
+    <style>
+         .back-button {
+            width: 10%;
+            padding: 10px;
+            font-size: 1.2rem;
+            background-color: #ff3399;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+         }
+
+         .back-button:hover {
+            background-color: #888
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-image: url("{% static 'img/pi.jpg' %}");
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: 100% 100%;
+        }
+        .scrollable-container {
+            max-height: 200px; /* Adjust the height as needed */
+            overflow-y: auto;
+        }
+    </style>
+<div class="container1">
+    <a href="{% url 'login' %}" class="back-button">Back</a><br><br>
+    <div class="container2">
+        {% block content %}
+        {% endblock %}
+    </div>
+</div>
+{% block extra_scripts %}
+    {% endblock %}
+</body>
+</html>

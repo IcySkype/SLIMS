@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container1">
+  <h2>Approve Lab Apparel Request</h2>
+
+  <h3>Request Details</h3>
+  <ul>
+    <li><strong>Control Number:</strong> {{ lab_request.control_number }}</li>
+    <li><strong>Student:</strong> {{ lab_request.student }}</li>
+    <li><strong>Course and Year:</strong> {{ lab_request.course_and_year }}</li>
+    <li><strong>Department:</strong> {{ lab_request.department }}</li>
+    <li><strong>Date Borrowed:</strong> {{ lab_request.date_borrowed }}</li>
+    <li><strong>Time Borrowed:</strong> {{ lab_request.time_borrowed }}</li>
+    <li><strong>Borrowed Item:</strong> {{ lab_request.get_borrowed_item_display }}</li>
+  </ul>
+
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="lab_technician">Noted by Lab Technician:</label>
+        <input 
+          type="text" 
+          id="lab_technician" 
+          class="form-control" 
+          value="{{ request.user.get_full_name }}" 
+          disabled>
+      </div>
+  
+      <div class="form-group mt-4">
+        <button type="submit" name="approve_request" value="true" class="btn btn-success">Approve</button>
+        <button type="submit" name="deny_request" value="true" class="btn btn-danger">Deny</button>
+      </div>
+  </form>
+</div>
+{% endblock %}

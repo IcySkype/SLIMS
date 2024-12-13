@@ -1,0 +1,50 @@
+/* Dashboard grid for B */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 20px;
+}
+
+/* Form layout for B */
+.register-form {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+/* Input styling for B */
+input {
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 90%;
+}
+
+/* Register button for B */
+.register-btn {
+    background-color: #FF6289;
+    color: white;
+    border: none;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    grid-column: span 2;
+}
+
+.register-btn:hover {
+    background-color: #e85779;
+}
+.card {
+    background-color: white; /* Set background color to white */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Light shadow for visibility */
+}

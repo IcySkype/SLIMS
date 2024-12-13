@@ -1,0 +1,35 @@
+
+<h1>My Material Requests</h1>
+
+<table>
+    <thead>
+        <tr>
+            <th>Control Number</th>
+            <th>Subject</th>
+            <th>Title of Experiment</th>
+            <th>Status</th>
+            <th>Date of Experiment</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for request in material_requests %}
+        <tr>
+            <td>{{ request.control_number }}</td>
+            <td>{{ request.subject }}</td>
+            <td>{{ request.title_of_experiment }}</td>
+            <td>{{ request.status }}</td>
+            <td>{{ request.date_of_experiment }}</td>
+            <td>
+                <!-- Add actions like View, Edit, or Delete -->
+                <a href="{% url 'material_request_detail' request.control_number %}">View</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6">No material requests found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+

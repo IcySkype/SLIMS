@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Return Lab Apparel</h2>
+
+    <h3>Lab Apparel Request Details</h3>
+    <ul>
+        <li><strong>Control Number:</strong> {{ lab_apparel_request.control_number }}</li>
+        <li><strong>Student:</strong> {{ lab_apparel_request.student }}</li>
+        <li><strong>Course and Year:</strong> {{ lab_apparel_request.course_and_year }}</li>
+        <li><strong>Department:</strong> {{ lab_apparel_request.department }}</li>
+        <li><strong>Date Borrowed:</strong> {{ lab_apparel_request.date_borrowed }}</li>
+        <li><strong>Time Borrowed:</strong> {{ lab_apparel_request.time_borrowed }}</li>
+        <li><strong>Borrowed Item:</strong> {{ lab_apparel_request.get_borrowed_item_display }}</li>
+        <li><strong>Status:</strong> {{ lab_apparel_request.get_status_display }}</li>
+    </ul>
+
+    {% if penalty %}
+        <h3>Penalty</h3>
+        <p>The penalty for late return is: <strong>{{ penalty }} USD</strong></p>
+    {% else %}
+        <p>No penalty has been incurred.</p>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">Return Lab Apparel</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Material Request</title>
+    <link rel="stylesheet" href="Matgown.css">
+</head>
+<body>
+    <style>
+         .back-button {
+            width: 10%;
+            padding: 10px;
+            font-size: 1.2rem;
+            background-color: #ff3399;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+         }
+
+         .back-button:hover {
+            background-color: #888
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('backimg.png') center/cover no-repeat;
+            filter: blur(3px);
+            z-index: -1;   
+        }
+    </style>
+
+<div class="container2">
+    <div class="header2">
+        <a href="scilab.html" class="back-button">Back</a>
+        <div>CONTROL NO: {{ material_request.control_number }}</div>
+        <div>MATERIAL REQUEST</div>
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group2">
+            <div class="form-field">
+                <label for="id_subject">Subject</label>
+                {{ form1.subject }}
+            </div>
+            <div class="form-field">
+                <label for="id_experiment_number">Experiment No.</label>
+                {{ form1.experiment_number }}
+            </div>
+            <div class="form-field">
+                <label for="id_group_number">Group No.</label>
+                {{ form1.group_number }}
+            </div>
+            <div class="form-field">
+                <label for="id_department">Department</label>
+                {{ form1.department }}
+            </div>
+            <div class="form-field">
+                <label for="id_title_of_experiment">Title Experiment</label>
+                {{ form1.title_of_experiment }}
+            </div>
+            <div class="form-field">
+                <label for="id_date_of_experiment">Date of Experiment</label>
+                {{ form1.date_of_experiment }}
+            </div>
+            <div class="form-field">
+                <label for="id_time_of_experiment">Time of Experiment</label>
+                {{ form1.time_of_experiment }}
+            </div>
+        </div>
+
+        <div class="table-container2">
+            <table class="table2">
+                <tr>
+                    <th>Material</th>
+                    <th>Quantity</th>
+                </tr>
+                {% for form in formset %}
+                    <tr>
+                        <td>{{ form.material }}</td>
+                        <td>{{ form.quantity }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+        <div class="form-group2">
+            <h3>Group Members</h3>
+            {{ group_form.as_p }} <!-- Group form is rendered here -->
+        </div>
+
+        <button type="submit" class="proceed-button">Submit Request</button>
+    </form>
+</div>
+
+</body>
+</html>

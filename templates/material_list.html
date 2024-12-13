@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>Material List</h2>
+
+  <a href="{% url 'add_material' %}" class="btn btn-primary mb-3">Add New Material</a>
+
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Quantity</th>
+        <th>Material Type</th>
+        <th>Date Added</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for material in materials %}
+        <tr>
+          <td>{{ material.name }}</td>
+          <td>{{ material.description }}</td>
+          <td>{{ material.quantity }}</td>
+          <td>{{ material.get_material_type_display }}</td>
+          <td>{{ material.date_added }}</td>
+          <td>
+            <a href="{% url 'update_material' material.pk %}" class="btn btn-warning btn-sm">Edit</a>
+            <a href="{% url 'delete_material' material.pk %}" class="btn btn-danger btn-sm">Delete</a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

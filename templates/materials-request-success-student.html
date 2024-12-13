@@ -1,0 +1,17 @@
+{% extends "student-borrow-base.html" %}
+
+{% block title %}
+Successful Materials Request
+{% endblock %}
+
+{% block content %}
+<div class="message">
+    <i class="fas fa-check"></i>  <h2>Successfully Requested!</h2>
+    <p>Your request has been submitted.</p> </div>
+    <p>Your control number is {{ materials_request.control_number }}.</p>
+    <p>Request made by group no. {{materials_request.group_number}} of subject {{materials_request.subject}}.</p>
+  <div class="buttons">
+    <a href="{% url 'borrow' %}"><button class="proceed-button"  onclick="goToAnotherPage('materials.html')">REQUEST AGAIN</button></a>
+    <a href="{% url 'login' %}"><button class="proceed-button">EXIT</button></a>
+  </div>
+{% endblock %}

@@ -1,0 +1,88 @@
+{% load i18n %}
+
+<head>
+{{ wizard.form.media }}
+</head>
+<body>
+<p>Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</p>
+<form method="post">
+    {% csrf_token %}
+    {{ wizard.management_form }}
+
+    {% if wizard.steps.current == '0' %}
+        <h2>User Agreement</h2>
+        {{ wizard.form.as_p }}
+    {% elif wizard.steps.current == '1' %}
+        <h2>Material Request</h2>
+        {{ wizard.form.as_p }}
+    {% elif wizard.steps.current == '2' %}
+        <h2>Materials in Request</h2>
+        {{ wizard.form.as_p }}
+    {% elif wizard.steps.current == '3' %}
+        <h2>Group Information</h2>
+        {{ wizard.form.group_name.as_p }}
+
+        <!-- Formset Management Fields -->
+        {{ group_member_formset.management_form }}
+        <input type="hidden" name="group_members-TOTAL_FORMS" value="1">
+        <div id="formset-container">
+            {% for form in group_member_formset.forms %}
+                <div class="formset-row">
+                    {{ form.as_p }}
+                </div>
+            {% empty %}
+                <div class="formset-row">
+                    <!-- Render an empty form if no forms exist -->
+                    {{ group_member_formset.empty_form.as_p }}
+                </div>
+            {% endfor %}
+        </div>
+
+        <button type="button" id="add-member-btn">Add Member</button>
+    {% endif %}
+    <button type="submit">Next</button>
+</form>
+</body>def process_step(self, form):
+        step = self.steps.current
+        if not form.is_valid():
+            print(f"Validation errors in step {step}: {form.errors}")
+        return super().process_step(form)
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    // Get references to the "Add Member" button, formset container, and total forms input
+    const addMemberBtn = document.getElementById("add-member-btn");
+    const formsetContainer = document.getElementById("formset-container");
+    const totalFormsInput = document.querySelector("input[name='group_members-TOTAL_FORMS']");
+
+    // Check if required elements exist
+    if (!addMemberBtn || !formsetContainer || !totalFormsInput) {
+        console.error("Required elements for dynamic formset are missing.");
+        return; // Exit early if elements are missing
+    }
+
+    addMemberBtn.addEventListener("click", function () {
+        // Parse the current total number of forms
+        const totalForms = parseInt(totalFormsInput.value, 10);
+
+        // Get the HTML for the first form in the container
+        const firstForm = formsetContainer.firstElementChild;
+        if (!firstForm) {
+            console.error("No form template found in the container.");
+            return;
+        }
+
+        // Replace the form indices in the cloned form's HTML
+        const newFormHtml = firstForm.outerHTML.replace(
+            /group_members-(\d+)-/g,
+            `group_members-${totalForms}-`
+        );
+
+        // Append the new form HTML to the container
+        formsetContainer.insertAdjacentHTML("beforeend", newFormHtml);
+
+        // Increment the total forms counter
+        totalFormsInput.value = totalForms + 1;
+    });
+});
+
+</script>
