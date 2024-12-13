@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SciLab{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-image: url("{% static 'img/pi.jpg' %}");
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: 100% 100%;
+        }
+        .scrollable-container {
+            max-height: 200px; /* Adjust the height as needed */
+            overflow-y: auto;
+        }
+        .container1 {
+            width: 700px;
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        </style>
+    {% block extra_styles %}
+    {% endblock %}
+</head>
+<body>
+    <!-- Navbar -->
+    <nav>
+        <img src="{% static 'img/imcc.png' %}" alt="School Logo" class="logo">
+        <span class="nav-title">SciLab</span>
+    </nav>
+
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <ul>
+                <li {% if active_page == 'dashboard' %}class="active"{% endif %}>
+                    <a href="{% url 'dashboard' %}"><i class="fas fa-tachometer-alt"></i>Dashboard</a>
+                </li>
+                <li {% if active_page == 'request_list' %}class="active"{% endif %}>
+                    <a href="{% url 'request_list' %}"><i class="fas fa-list"></i>Request List</a>
+                </li>
+                {% if user.user_type == 'teacher' %}
+                <li {% if active_page == 'request_list' %}class="active"{% endif %}>
+                    <a href="{% url 'borrow' %}"><i class="fas fa-chart-bar"></i>Request Material</a>
+                </li>
+                {% elif user.user_type == 'lab_technician' %}
+                <li {% if active_page == 'reports' %}class="active"{% endif %}>
+                    <a href="#"><i class="fas fa-chart-bar"></i>Reports</a>
+                </li>
+                <li {% if active_page == 'list_materials' %}class="active"{% endif %}>
+                    <a href="{% url 'material_list' %}"><i class="fas fa-boxes"></i>List Materials</a>
+                </li>
+                <li {% if active_page == 'return' %}class="active"{% endif %}>
+                    <a href="{% url 'search_liabilities' %}"><i class="fas fa-undo"></i>Check Liabilities</a>
+                </li>
+                <li {% if active_page == 'register' %}class="active"{% endif %}>
+                    <a href="{% url 'register' %}"><i class="fas fa-user-plus"></i>Register</a>
+                </li>
+                {% endif %}
+            </ul>
+            <ul class="logout">
+                <li>
+                    <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i>Logout</a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Content -->
+        <div class="content">
+            {% block content %}
+            <!-- User-specific content will be injected here -->
+            {% endblock %}
+        </div>
+    </div>
+    {% block extra_scripts %}
+    {% endblock %}
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="IMCC Science Laboratory Login">
+    <title>IMCC Science Laboratory Login</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles-home.css' %}">
+    <style>
+        .container {
+            display: flex;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+            background: url('{% static "img/background.jpg" %}') no-repeat left center;
+            background-size: cover;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="left-panel">
+            <img src="{% static 'img/Logoimcc.png' %}" alt="IMCC Logo" width="200" height="200" class="logo-effect">
+            <h1>SCIENCE LABORATORY</h1>
+            <h2>ILIGAN MEDICAL CENTER COLLEGE</h2>
+        </div>
+        <div class="right-panel">
+            <h1>Login to your account</h1>
+            <p>Welcome back! Please enter your details.</p>
+            <form action="{% url 'login' %}" method="POST" class="login-form">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+                <div class="form-group">
+                    {{ form.email.label_tag }}
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                        <div class="error">
+                            {{ form.email.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.password.label_tag }}
+                    {{ form.password }}
+                    {% if form.password.errors %}
+                        <div class="error">
+                            {{ form.password.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+                <button type="submit" class="btn btn-primary sign-in-btn">Sign in</button>
+            </form>
+            <div class="additional-links">
+                <p><a href="#" class="forgot-password">Forgot Password?</a></p>
+                <p><a href="#" class="student-guest" onclick="showModal()">Student/Guest?</a></p>
+        </div>
+    </div>
+
+    <div id="choiceModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <a href="{% url 'lab_gown_request' %}"><button onclick="chooseLabGown()">Lab Gown</button></a>
+            <a href="{% url 'borrow' %}"><button>Materials</button></a>
+        </div>
+    </div>
+
+    <script src="{% static 'js/script-home.js' %}"></script>
+</body>
+</html>

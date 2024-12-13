@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block head %}
+{{ wizard.form.media }}
+{% endblock %}
+
+{% block content %}
+<div class="container1">
+<div class="table-container">
+    <form method="POST">
+        <h2>New Materials Request</h2>
+        {% csrf_token %}
+        {{ wizard.management_form }}
+        {{ wizard.form.management_form }}
+        <div id="material-fields">
+            
+            <table class="table">
+                <thead><tr>
+                    <th colspan="3">MATERIALS/EQUIPMENT AND REAGENTS</th>
+                </tr>
+                <tr>
+                    <th>Qty</th>
+                    <th>Unit</th>
+                    <th>Description</th>
+                </tr></thead>
+                <tbody>
+                {% for form in wizard.form %}
+                <tr class="material-entry">
+                    <td>{{ form.quantity }}</td>
+                    <td>{{ form.unit }}</td>
+                    <td>{{ form.material }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            </table>
+        </div>
+    
+        <div>
+            <button type="button" id="add-material-btn">Add Material to List</button>
+        </div>
+    
+        <button type="submit" class="proceed-button">Next</button>
+    </form>
+    
+    <!-- Material/Equipment Table -->
+    
+</div>
+</div>
+{% endblock %}
+{%block extra_scripts%}
+<script>
+    document.getElementById("add-material-btn").addEventListener("click", function () {
+    const materialFields = document.getElementById("material-fields");
+    const totalFormsInput = document.querySelector("#id_form-TOTAL_FORMS");
+    let totalForms = parseInt(totalFormsInput.value, 10);
+
+    // Create a new row by cloning the empty form template
+    const newEntry = materialFields.querySelector(".material-entry:last-child").cloneNode(true);
+    const regex = new RegExp(`form-(\\d+)-`, "g");
+
+    // Update form indices
+    newEntry.innerHTML = newEntry.innerHTML.replace(regex, `form-${totalForms}-`);
+
+    Array.from(newEntry.querySelectorAll("[id], [name]")).forEach((element) => {
+        if (element.id) {
+            element.id = element.id.replace(regex, `form-${totalForms}-`);
+        }
+        if (element.name) {
+            element.name = element.name.replace(regex, `form-${totalForms}-`);
+        }
+        if (element.tagName === "INPUT" || element.tagName === "SELECT") {
+            element.value = ""; // Clear field values
+        }
+    });
+
+    // Append the new row and update the TOTAL_FORMS count
+    materialFields.querySelector("tbody").appendChild(newEntry);
+    totalFormsInput.value = totalForms + 1;
+});
+</script>
+{%endblock%}

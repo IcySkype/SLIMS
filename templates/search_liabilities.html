@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Search Liabilities by Student ID</h2>
+
+    <!-- Search Bar -->
+    <form method="get" class="d-flex mb-3">
+        <input type="text" name="student_id" class="form-control" placeholder="Enter Student ID" value="{{ student_id }}" aria-label="Search Student ID">
+        <button type="submit" class="btn btn-primary ms-2">Search</button>
+    </form>
+
+    {% if liabilities %}
+        <h3>Liabilities for Student ID: {{ student_id }}</h3>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Request Type</th>
+                    <th>Request ID</th>
+                    <th>Student</th>
+                    <th>Status</th>
+                    <th>Remarks</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for liability in liabilities %}
+                <tr>
+                    <td>{{ liability.get_request_type_display }}</td>
+                    <td>{{ liability.request }}</td>
+                    <td>{{ liability.student }}</td>
+                    <td>
+                        {% if liability.is_complied %}
+                            <span class="badge bg-success">Complied</span>
+                        {% else %}
+                            <span class="badge bg-warning">Pending</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ liability.remarks }}</td>
+                    <td>
+                        {% if liability.request_type == 'materials_request' %}
+                        <a href="{% url 'replace_broken_item' liability.id %}" class="btn btn-info">Comply</a>
+                        {% elif liability.request_type == 'lab_apparel_request' %}
+                        <a href="{% url 'return_lab_apparel' liability.request %}" class="btn btn-info">Comply</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No liabilities found for the given student ID.</p>
+    {% endif %}
+</div>
+{% endblock %}

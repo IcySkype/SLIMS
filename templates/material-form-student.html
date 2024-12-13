@@ -1,0 +1,47 @@
+{% extends "student-borrow-base.html" %}
+{% load i18n %}
+
+{% block head %}
+{{ wizard.form.media }}
+{% endblock %}
+
+{% block content %}
+<form method="post">
+    {% csrf_token %}
+    {{ wizard.management_form }}
+    <h2>New Materials Request</h2>
+        <div class="form-field">
+            <label for="subject">Subject</label>
+            {{wizard.form.subject}}
+        </div>
+        <div class="form-field">
+            <label for="experiment-no">Experiment No.</label>
+            {{wizard.form.experiment_number}}
+        </div>
+        <div class="form-field">
+            <label for="group-no">Group No.</label>
+            {{wizard.form.group_number}}
+        </div>
+        <div class="form-field">
+            <label for="department">Department</label>
+            {{wizard.form.department}}
+        </div>
+        <div class="form-field">
+            <label for="title-experiment">Title Experiment</label>
+            {{wizard.form.title_of_experiment}}
+        </div>
+        <div class="form-field">
+            <label for="date-experiment">Date of Experiment</label>
+            {{wizard.form.date_of_experiment}}
+        </div>
+        <div class="form-field">
+            <label for="time-experiment">Time of Experiment</label>
+            {{wizard.form.time_of_experiment}}
+        </div>
+        <div class="form-field">
+            <label for="teacher">Teacher in Charge</label>
+            {{wizard.form.teacher}}
+        </div>
+    <button type="submit" class="proceed-button">Next</button>
+</form>
+{% endblock %}

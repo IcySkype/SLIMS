@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container1">
+<h1>My Requests</h1>
+{% if request.GET.alert %}
+  <div class="alert alert-{{ request.GET.alert_type }} alert-dismissible fade show" role="alert">
+    {{ request.GET.alert }}
+  </div>
+{% endif %}
+<h2>Material Requests</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Control Number</th>
+            <th>Subject</th>
+            <th>Experiment Title</th>
+            <th>Status</th>
+            {% if user.user_type == 'lab_technician' %}<th>Teacher</th>{% endif %}
+            <th>Date of Experiment</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for request in material_requests %}
+        <tr>
+            <td>{{ request.control_number }}</td>
+            <td>{{ request.subject }}</td>
+            <td>{{ request.title_of_experiment }}</td>
+            <td><span class="status {%if request.status in approved_status %}approved{% elif request.status in declined_status %}declined{% else %}pending{% endif %}">{{ request.get_status_display }}</span></td>
+            {% if user.user_type == 'lab_technician' %}
+            <td>{{ request.teacher.get_full_name }}</td>{% endif %}
+            <td>{{ request.date_of_experiment }}</td>
+            <td>
+                {% if user.user_type == 'teacher' %}
+                <a href="{% url 'approve_material_request' control_number=request.control_number %}">View</a>
+                {% elif user.user_type == 'lab_technician' %}
+                    {% if request.status == 'borrowed' %}
+                    <a href="{% url 'return_items' control_number=request.control_number %}"><i class="fas fa-undo"></i>Return Items</a>
+                    {% elif request.status == 'approved' %}
+                    <a href="{% url 'check_and_approve_material_request' control_number=request.control_number %}">View</a>
+                    {% endif %}
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6">No material requests found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h2>Lab Apparel Requests</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Control Number</th>
+            <th>Item</th>
+            <th>Student</th>
+            <th>Status</th>
+            <th>Date Borrowed</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for request in lab_apparel_requests %}
+        <tr>
+            <td>{{ request.control_number }}</td>
+            <td>{{ request.get_borrowed_item_display }}</td>
+            <td>{{ request.student }}</td>
+            <td><span class="status {%if request.status in approved_status %}approved{% elif request.status in declined_status %}declined{% else %}pending{% endif %}">{{ request.get_status_display }}</span></td>
+            <td>{{ request.date_borrowed }}</td>
+            <td>
+                {% if user.user_type == 'teacher' %}
+                <a href="{% url 'approve_lab_gown' control_number=request.control_number %}">View</a>
+                {% elif user.user_type == 'lab_technician' %}
+                    {% if request.status == 'borrowed' %}
+                    <a href="{% url 'return_lab_apparel' control_number=request.control_number %}"><i class="fas fa-undo"></i>Return</a>
+                    {% elif request.status == 'approved' %}
+                    <a href="{% url 'approve_lab_apparel_request' control_number=request.control_number %}">View</a>
+                    {% endif %}
+                {% endif %}
+                
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6">No lab apparel requests found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+{% endblock %}
+{% block extra_scripts %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    {% endblock %}

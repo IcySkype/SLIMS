@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Return Items for Request {{ material_request.control_number }}</h2>
+
+    <h3>Request Details</h3>
+    <ul>
+        <li><strong>Control Number:</strong> {{ material_request.control_number }}</li>
+        <li><strong>Subject:</strong> {{ material_request.subject }}</li>
+        <li><strong>Title:</strong> {{ material_request.title_of_experiment }}</li>
+        <li><strong>Status:</strong> {{ material_request.get_status_display }}</li>
+    </ul>
+
+    <form method="post">
+        {% csrf_token %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Material</th>
+                    <th>Current Status</th>
+                    <th>New Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for material_in_request in materials_in_request %}
+                <tr>
+                    <td>{{ material_in_request.material.name }}</td>
+                    <td>{{ material_in_request.get_status_display }}</td>
+                    <td>
+                        <select name="status_{{ material_in_request.id }}">
+                            <option value="returned" {% if material_in_request.status == 'returned' %}selected{% endif %}>Returned</option>
+                            <option value="broken" {% if material_in_request.status == 'broken' %}selected{% endif %}>Broken</option>
+                            <option value="used" {% if material_in_request.status == 'used' %}selected{% endif %}>Used</option>
+                        </select>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,91 @@
+{% extends "student-borrow-base.html" %}
+{% load i18n %}
+
+{% block head %}
+{{ wizard.form.media }}
+{% endblock %}
+
+{% block content %}
+<div class="table-container">
+    <form method="POST">
+        <h2>New Materials Request</h2>
+        {% csrf_token %}
+        {{ wizard.management_form }}
+        {{ wizard.form.management_form }}
+    <table class="table">
+        <thead>
+            <th>Members</th>
+            <th>ID No.</th>
+            <th>First Name</th>
+            <th>Surname</th>
+            <th>Contact No.</th>
+        </thead>
+        <tbody>
+            {% for form in wizard.form.forms %}
+                <tr class="student-entry">
+                    {% if forloop.counter == 1 %}
+                    <td>Leader</td>
+                    {% else %}
+                    <td>Leader</td>
+                    {% endif %}
+                    <td>{{ form.student_id }}</td>
+                    <td>{{ form.first_name }}</td>
+                    <td>{{ form.surname }}</td>
+                    <td>{{ form.contact_number }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div>
+        <button type="button" id="add-member-btn">Add Member to List</button>
+    </div>
+
+    <button type="submit" class="proceed-button">Done</button>
+</div>
+{% endblock %}
+{%block extra_scripts%}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const addMemberButton = document.getElementById("add-member-btn");
+        const membersTable = document.getElementById("members-table").querySelector("tbody");
+
+        addMemberButton.addEventListener("click", function () {
+            // Clone the last row in the table
+            const lastRow = membersTable.querySelector("tr:last-child");
+            const newRow = lastRow.cloneNode(true);
+
+            // Clear input values in the cloned row
+            newRow.querySelectorAll("input").forEach(input => {
+                input.value = "";
+                const name = input.name.replace(/-\d+-/, `-${membersTable.children.length}-`);
+                input.name = name;
+                input.id = name;
+            });
+
+            // Update the role column
+            newRow.querySelector("td:first-child").textContent = "Member";
+
+            // Add a remove button if it doesn't exist
+            const removeButton = newRow.querySelector(".remove-member-btn");
+            if (!removeButton) {
+                const actionCell = newRow.querySelector("td:last-child");
+                const removeBtn = document.createElement("button");
+                removeBtn.type = "button";
+                removeBtn.className = "remove-member-btn";
+                removeBtn.textContent = "Remove";
+                actionCell.appendChild(removeBtn);
+            }
+
+            // Append the new row to the table
+            membersTable.appendChild(newRow);
+        });
+
+        membersTable.addEventListener("click", function (event) {
+            if (event.target.classList.contains("remove-member-btn")) {
+                const row = event.target.closest("tr");
+                membersTable.removeChild(row);
+            }
+        });
+    });
+</script>
+{% endblock %}

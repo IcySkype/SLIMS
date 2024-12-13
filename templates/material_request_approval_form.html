@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>Approve{% if material_request.status != 'pending_approval' and material_request.status != 'approved' %}d{% endif %} Material Request</h2>
+
+  <h3>Request Details</h3>
+  <ul>
+    <li><strong>Control Number:</strong> {{ material_request.control_number }}</li>
+    <li><strong>Teacher:</strong> {{ material_request.teacher }}</li>
+    <li><strong>Subject:</strong> {{ material_request.subject }}</li>
+    <li><strong>Department:</strong> {{ material_request.department }}</li>
+    <li><strong>Experiment Number:</strong> {{ material_request.experiment_number }}</li>
+    <li><strong>Group Number:</strong> {{ material_request.group_number }}</li>
+    <li><strong>Date of Experiment:</strong> {{ material_request.date_of_experiment }}</li>
+    <li><strong>Time of Experiment:</strong> {{ material_request.time_of_experiment }}</li>
+    <li><strong>Title of Experiment:</strong> {{ material_request.title_of_experiment }}</li>
+    <li><strong>Status:</strong> {{ material_request.get_status_display }}</li>
+    <li><strong>Created At:</strong> {{ material_request.created_at }}</li>
+  </ul>
+{% if material_request.status == 'pending_approval' %}
+  <form method="post">
+    {% csrf_token %}
+    <p>Are you sure you want to approve this request?</p>
+    <button type="submit">Approve</button>
+  </form>
+{% endif %}
+{% endblock %}

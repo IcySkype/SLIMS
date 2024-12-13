@@ -1,0 +1,18 @@
+/* Dashboard grid for A */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 20px;
+}
+
+/* Bottom row adjustment for A */
+.bottom-row {
+    grid-column: span 2;
+    margin-top: -50px;
+}
+
+/* Request overview adjustment for A */
+.request-overview p {
+    white-space: nowrap;
+    overflow: hidden;
+}

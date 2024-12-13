@@ -1,0 +1,23 @@
+{% extends "student-borrow-base.html" %}
+{% load i18n %}
+
+{% block head %}
+{{ wizard.form.media }}
+{% endblock %}
+
+{% block content %}
+<form method="post">
+    {% csrf_token %}
+    {{ wizard.management_form }}
+    <h2>REMINDERS:</h2>
+    <div class="scrollable-container">
+        <p>
+            This is to acknowledge that I borrowed the item/s listed above with my full name and other personal details. I promise to return the Item/s on the same date and in the event of not returning it,
+            I agree that there will be a <strong>₱10.00/day including weekends and holidays as penalty</strong> of the said item/s borrowed.
+        </p>
+    </div>
+    {{ wizard.form.as_p }}
+    <button type="submit" class="proceed-button">Next</button>
+</form>
+
+{% endblock %}

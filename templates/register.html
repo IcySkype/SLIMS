@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block extra_styles %}
+<link rel="stylesheet" href="{% static 'css/styles-labtech.css' %}">
+{% endblock %}
+{% block title %}
+Teacher Register
+{% endblock %}
+
+{% block content %}
+<div class="card1">
+    <h2>Teacher Register</h2>
+    <form action="{% url 'register' %}" method="post" class="register-form">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <div class="form-group">
+            {{ form.email.label_tag }}
+            {{ form.email }}
+            {{ form.email.errors }}
+        </div>
+        <div class="form-group">
+            {{ form.username.label_tag }}
+            {{ form.username }}
+            {{ form.username.errors }}
+        </div>
+        <div class="form-group">
+            {{ form.id_num.label_tag }}
+            {{ form.id_num }}
+            {{ form.id_num.errors }}
+        </div>
+        <div class="form-group">
+            {{ form.first_name.label_tag }}
+            {{ form.first_name }}
+            {{ form.first_name.errors }}
+        </div>
+        <div class="form-group">
+            {{ form.last_name.label_tag }}
+            {{ form.last_name }}
+            {{ form.last_name.errors }}
+        </div>
+        <div class="form-group">
+            {{ form.password1.label_tag }}
+            {{ form.password1 }}
+            {{ form.password1.errors }}
+        </div>
+        <div class="form-group">
+            {{ form.password2.label_tag }}
+            {{ form.password2 }}
+            {{ form.password2.errors }}
+        </div>
+        <div class="form-group">
+            <button type="submit" class="register-btn">Register</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

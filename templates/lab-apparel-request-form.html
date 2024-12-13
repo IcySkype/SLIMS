@@ -1,0 +1,63 @@
+{% extends "student-borrow-base.html" %}
+{% load i18n %}
+
+{% block head %}
+{{ wizard.form.media }}
+{% endblock %}
+
+{% block content %}
+<h2>Lab Apparel Request Form</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ wizard.management_form }}
+        <div class="form-field">
+          {{wizard.form.first_name.label}}
+          {{wizard.form.first_name}}
+        </div>
+        <div class="form-field">
+          {{wizard.form.last_name.label}}
+          {{wizard.form.last_name}}
+        </div>
+        <div class="form-field">
+          {{wizard.form.student_id.label}}
+          {{wizard.form.student_id}}
+        </div>
+        <div class="form-field">
+          {{wizard.form.student_contact_number.label}}
+          {{wizard.form.student_contact_number}}
+        </div>
+        <div class="form-field">
+          {{wizard.form.course_and_year.label}}
+          {{wizard.form.course_and_year}}
+        </div>
+        <div class="form-field">
+          {{wizard.form.department.label}}
+          {{wizard.form.department}}
+        </div>
+        <div class="form-field">
+          {{wizard.form.date_borrowed.label}}
+          {{wizard.form.date_borrowed}}
+        </div>
+        <div class="form-field">
+          {{wizard.form.time_borrowed.label}}
+          {{wizard.form.time_borrowed}}
+        </div>
+        <div class="form-field">
+          {{wizard.form.contact_number.label}}
+          {{wizard.form.contact_number}}
+        </div>
+        <div class="form-field">
+          {{wizard.form.teacher.label}}
+          {{wizard.form.teacher}}
+        </div>
+        <div class="form-field">
+          {{wizard.form.contact_number.label}}
+          {{wizard.form.contact_number}}
+        </div>
+        <div class="form-field">
+            {{wizard.form.borrowed_item.label}}{{wizard.form.borrowed_item}}
+        </div>
+    <button type="submit" class="proceed-button">Submit</button>
+  </form>
+
+{% endblock %}
