@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from formtools.wizard.views import SessionWizardView
 
-    #Materials request
+#Materials request
 class MaterialsRequestWizard(SessionWizardView):
     FORMS = [UserAgreementForm,
                 MaterialRequestForm,
@@ -28,7 +28,7 @@ class MaterialsRequestWizard(SessionWizardView):
         if step == '1':
             kwargs['user'] = self.request.user
         if step == '2':
-            kwargs['queryset'] = MaterialInRequest.objects.none()
+            kwargs['queryset'] = ItemInRequest.objects.none()
         if step == '3':
             kwargs['queryset'] = Student.objects.none()
 

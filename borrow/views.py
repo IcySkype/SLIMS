@@ -1,7 +1,7 @@
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView, DeleteView, ListView
 from django.contrib.messages.views import SuccessMessageMixin
-from .models import Material, MaterialInRequest, MaterialRequest, Group, Liability, LabApparelRequest
+from .models import Material, ItemInRequest, MaterialRequest, Group, Liability, LabApparelRequest
 from .forms import *
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
@@ -19,14 +19,20 @@ class AddMaterialView(SuccessMessageMixin, CreateView):
 
 class UpdateMaterialView(SuccessMessageMixin, UpdateView):
     model = Material
-    form_class = UpdateMaterialForm
+    form_class = UpdateMaterialDetailsForm
     template_name = 'update_material.html'
     success_url = reverse_lazy('material_list')
     success_message = 'Material updated successfully.'
 
+class StockMaterialView(SuccessMessageMixin, UpdateView):
+    model = Material
+    form_class = RestockMaterialForm
+    template_name = 'restock_material.html'
+    success_url = reverse_lazy('material_list')
+    success_message = 'Material updated stock successfully.'
+
 class DeleteMaterialView(SuccessMessageMixin, DeleteView):
     model = Material
-    form_class = DeleteMaterialForm
     template_name = 'delete_material.html'
     success_url = reverse_lazy('material_list')
     success_message = 'Material deleted successfully.'
@@ -36,36 +42,64 @@ class MaterialListView(ListView):
     template_name = 'material_list.html'
     context_object_name = 'materials'
     queryset = Material.objects.all()
+    paginate_by = 10
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search_query = self.request.GET.get('q')
+        
+        if search_query:
+            queryset = queryset.filter(
+                Q(name__icontains=search_query) | 
+                Q(supplier__icontains=search_query) | 
+                Q(description__icontains=search_query) | 
+                Q(last_ordered__icontains=search_query)
+            )
+        return queryset
 
 #view requests:
 class RequestListView(ListView):
+    model = Request
     template_name = 'request_list_view.html'
     context_object_name = 'requests'
 
     def get_queryset(self):
-        if self.request.user.user_type == 'teacher':
-            material_requests = MaterialRequest.objects.filter(teacher=self.request.user)
-            lab_apparel_requests = LabApparelRequest.objects.filter(teacher=self.request.user)
-        elif self.request.user.user_type == 'lab_technician':
-            material_requests = MaterialRequest.objects.filter(teacher_approval=True)
-            lab_apparel_requests = LabApparelRequest.objects.filter(teacher_approval=True)
-        combined_requests = list(material_requests) + list(lab_apparel_requests)
-        return combined_requests
+        user = self.request.user
+        
+        excluded_statuses = ['denied', 'returned']
+        
+        if user.user_type == 'teacher':
+            return MaterialRequest.objects.filter(
+                teacher=user,
+            ).exclude(request__status__in=excluded_statuses).distinct()
+
+        elif user.user_type == 'lab_technician':
+            material_requests = MaterialRequest.objects.filter(
+                teacher_approval=True,
+            ).exclude(request__status__in=excluded_statuses)
+
+            
+            lab_apparel_requests = LabApparelRequest.objects.filter(
+                request__status__in=excluded_statuses
+            )
+            combined_requests = list(material_requests) + list(lab_apparel_requests)
+            return combined_requests
+
+        return Request.objects.none()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        if self.request.user.user_type == 'teacher':
-            material_requests = MaterialRequest.objects.filter(teacher=self.request.user)
-            lab_apparel_requests = LabApparelRequest.objects.filter(teacher=self.request.user)
-        elif self.request.user.user_type == 'lab_technician':
-            material_requests = MaterialRequest.objects.filter(teacher_approval=True)
-            lab_apparel_requests = LabApparelRequest.objects.filter(teacher_approval=True)
         
-        context['material_requests'] = material_requests
-        context['lab_apparel_requests'] = lab_apparel_requests
-
-        context['approved_status'] = ['approved', 'ready', 'returned']
-        context['declined_status'] = ['denied', 'borrowed']
+        if self.request.user.user_type == 'teacher': 
+            context['material_requests'] = MaterialRequest.objects.filter(
+                request__status__in=['pending_approval', 'approved'],  # Access Request's `status`
+                teacher=self.request.user  # Filter by teacher
+            )
+            context['lab_apparel_requests'] = []
+        
+        elif self.request.user.user_type == 'lab_technician':
+            context['material_requests'] = MaterialRequest.objects.filter(request__in=context['requests'])
+            context['lab_apparel_requests'] = LabApparelRequest.objects.filter(request__in=context['requests'])
         
         return context
 
@@ -74,10 +108,10 @@ class RequestListView(ListView):
 def return_items(request, control_number):
     # Get the MaterialRequest object by control_number
     material_request = get_object_or_404(MaterialRequest, control_number=control_number)
-    materials_in_request = MaterialInRequest.objects.filter(request=material_request)
+    materials_in_request = ItemInRequest.objects.filter(request=material_request)
 
     if request.method == 'POST':
-        # Iterate through all MaterialInRequest objects and update their status
+        # Iterate through all ItemInRequest objects and update their status
         for material_in_request in materials_in_request:
             status = request.POST.get(f'status_{material_in_request.id}')
             if status:

@@ -26,16 +26,39 @@ class TeacherRegisterForm(UserCreationForm):
     email = forms.EmailField(
         widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Enter your email'}),
         required=True,
+        label='Email Address'
     )
     id_num = forms.CharField(
         max_length=10,
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter your ID Number'}),
         required=True,
+        label='ID Number'
     )
-
+    first_name = forms.CharField(
+        max_length=30,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter your first name'}),
+        required=True,
+        label='First Name'
+    )
+    last_name = forms.CharField(
+        max_length=30,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter your last name'}),
+        required=True,
+        label='Last Name'
+    )
+    password1 = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Enter your password'}),
+        required=True,
+        label='Password'
+    )
+    password2 = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Confirm your password'}),
+        required=True,
+        label='Confirm Password'
+    )
     class Meta:
         model = User
-        fields = ['email', 'username', 'first_name', 'last_name', 'id_num', 'password1', 'password2']
+        fields = ['email', 'first_name', 'last_name', 'id_num', 'password1', 'password2']
     
 
 class EmailLoginForm(forms.Form):

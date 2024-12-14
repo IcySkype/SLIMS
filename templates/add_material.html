@@ -1,18 +1,45 @@
 {% extends "base.html" %}
+
 {% block content %}
   <h2>Add New Material</h2>
 
   <form method="post">
     {% csrf_token %}
-    {{ form.as_p }}
+    
+    <div class="form-group">
+      {{ form.name.label }}  
+      {{ form.name }}
+    </div>
+
+    <div class="form-group">
+      {{ form.material_type.label }}  
+      {{ form.material_type }}
+    </div>
+    <div class="form-group">
+      {{ form.description.label }}  
+      {{ form.description }}
+    </div>
+
+    <div class="form-group">
+      {{ form.stock.label }}  
+      {{ form.stock }}
+    </div>
+
+    <div class="form-group">
+      {{ form.supplier.label }}  
+      {{ form.supplier }}
+    </div>
+
+    <div class="form-group">
+      {{ form.last_stocked.label }}  
+      {{ form.last_stocked }}
+    </div>
+
+    <div class="form-group">
+      {{ form.last_ordered.label }}  
+      {{ form.last_ordered }}
+    </div>
+
     <button type="submit" class="btn btn-primary">Add Material</button>
   </form>
-
-  {% if messages %}
-    <div class="alert alert-success mt-3">
-      {% for message in messages %}
-        <p>{{ message }}</p>
-      {% endfor %}
-    </div>
-  {% endif %}
 {% endblock %}

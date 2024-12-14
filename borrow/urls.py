@@ -5,6 +5,7 @@ urlpatterns = [
     path('materials/', view=views.MaterialListView.as_view(), name='material_list'),
     path('materials/add/', view=views.AddMaterialView.as_view(), name='add_material'),
     path('materials/<int:pk>/update/', view=views.UpdateMaterialView.as_view(), name='update_material'),
+    path('materials/<int:pk>/stock/', view=views.StockMaterialView.as_view(), name='stock_material'),
     path('materials/<int:pk>/delete/', view=views.DeleteMaterialView.as_view(), name='delete_material'),
 
     path('borrow/', view=borrow_views.MaterialsRequestWizard.as_view(), name='borrow'),
