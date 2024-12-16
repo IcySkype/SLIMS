@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <h2>Borrow Requests Report</h2>
+
+    <!-- Filter Form -->
+    <form method="get">
+        <label for="start_date">Start Date:</label>
+        <input type="date" name="start_date" value="{{ start_date }}">
+        <label for="end_date">End Date:</label>
+        <input type="date" name="end_date" value="{{ end_date }}">
+        <button type="submit" class="btn btn-primary">Filter</button>
+    </form>
+
+    <!-- CSV Export Button -->
+    <a href="{% url 'requests_report_csv' %}" class="btn btn-success mt-3">Export to CSV</a>
+
+    <!-- Table -->
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Control No.</th>
+                <th>Request Type</th>
+                <th>Request Date</th>
+                <th>Lab Technician</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for req in requests %}
+            <tr>
+                <td>{{ req.control_number }}</td>
+                <td>{{ req.get_request_type_display }}</td>
+                <td>{{ req.request_created_on }}</td>
+                <td>{{ req.lab_technician }}</td>
+                <td>{{ req.get_status_display }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

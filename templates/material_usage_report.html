@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <h2>Material Usage and Restocking Report</h2>
+
+    <!-- Filter Form -->
+    <form method="get">
+        <label for="start_date">Start Date:</label>
+        <input type="date" name="start_date">
+        <label for="end_date">End Date:</label>
+        <input type="date" name="end_date">
+        <button type="submit" class="btn btn-primary">Filter</button>
+    </form>
+
+    <!-- CSV Export Button -->
+    <a href="{% url 'export_material_usage_report' %}" class="btn btn-success mt-3">Export to CSV</a>
+
+    <!-- Table -->
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Material</th>
+                <th>Action</th>
+                <th>Quantity</th>
+                <th>Date</th>
+                <th>Remarks</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in logs %}
+            <tr>
+                <td>{{ log.material.name }}</td>
+                <td>{{ log.get_action_display }}</td>
+                <td>{{ log.quantity }}</td>
+                <td>{{ log.date }}</td>
+                <td>{{ log.remarks }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

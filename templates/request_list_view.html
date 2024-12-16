@@ -1,99 +1,173 @@
 {% extends "base.html" %}
+{% block extra_styles %}
+<style>
+.custom-rounded-table {
+    border-radius: 8px !important; /* Round the table corners */
+    overflow: hidden; /* Prevent content from overflowing outside the rounded corners */
+}
 
-{% block content %}
-<div class="container1">
-<h1>My Requests</h1>
-{% if request.GET.alert %}
-  <div class="alert alert-{{ request.GET.alert_type }} alert-dismissible fade show" role="alert">
-    {{ request.GET.alert }}
-  </div>
-{% endif %}
-<h2>Material Requests</h2>
-<table>
-    <thead>
-        <tr>
-            <th>Control Number</th>
-            <th>Subject</th>
-            <th>Experiment Title</th>
-            <th>Status</th>
-            {% if user.user_type == 'lab_technician' %}<th>Teacher</th>{% endif %}
-            <th>Date of Experiment</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for request in material_requests %}
-        <tr>
-            <td>{{ request.control_number }}</td>
-            <td>{{ request.subject }}</td>
-            <td>{{ request.title_of_experiment }}</td>
-            <td><span class="status {%if request.status in approved_status %}approved{% elif request.status in declined_status %}declined{% else %}pending{% endif %}">{{ request.get_status_display }}</span></td>
-            {% if user.user_type == 'lab_technician' %}
-            <td>{{ request.teacher.get_full_name }}</td>{% endif %}
-            <td>{{ request.date_of_experiment }}</td>
-            <td>
-                {% if user.user_type == 'teacher' %}
-                <a href="{% url 'approve_material_request' control_number=request.control_number %}">View</a>
-                {% elif user.user_type == 'lab_technician' %}
-                    {% if request.status == 'borrowed' %}
-                    <a href="{% url 'return_items' control_number=request.control_number %}"><i class="fas fa-undo"></i>Return Items</a>
-                    {% elif request.status == 'approved' %}
-                    <a href="{% url 'check_and_approve_material_request' control_number=request.control_number %}">View</a>
-                    {% endif %}
-                {% endif %}
-            </td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="6">No material requests found.</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+.custom-rounded-table th,
+.custom-rounded-table td {
+    border-radius: 0px; /* Optional: Ensure that table cell corners are squared */
+}
 
-<h2>Lab Apparel Requests</h2>
-<table>
-    <thead>
-        <tr>
-            <th>Control Number</th>
-            <th>Item</th>
-            <th>Student</th>
-            <th>Status</th>
-            <th>Date Borrowed</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for request in lab_apparel_requests %}
-        <tr>
-            <td>{{ request.control_number }}</td>
-            <td>{{ request.get_borrowed_item_display }}</td>
-            <td>{{ request.student }}</td>
-            <td><span class="status {%if request.status in approved_status %}approved{% elif request.status in declined_status %}declined{% else %}pending{% endif %}">{{ request.get_status_display }}</span></td>
-            <td>{{ request.date_borrowed }}</td>
-            <td>
-                {% if user.user_type == 'teacher' %}
-                <a href="{% url 'approve_lab_gown' control_number=request.control_number %}">View</a>
-                {% elif user.user_type == 'lab_technician' %}
-                    {% if request.status == 'borrowed' %}
-                    <a href="{% url 'return_lab_apparel' control_number=request.control_number %}"><i class="fas fa-undo"></i>Return</a>
-                    {% elif request.status == 'approved' %}
-                    <a href="{% url 'approve_lab_apparel_request' control_number=request.control_number %}">View</a>
-                    {% endif %}
-                {% endif %}
-                
-            </td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="6">No lab apparel requests found.</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-</div>
+.custom-rounded-table thead {
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px; /* Round the top corners of the header */
+}
+
+.custom-rounded-table tfoot {
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px; /* Round the bottom corners of the footer if applicable */
+}
+.pagination-container {
+    margin-top: 20px; /* Add space between the table and pagination */
+}
+.status-pending {
+    background-color: #f8d7da; /* Light red for pending */
+    color: #721c24; /* Dark red text */
+    font-weight: bold;
+    padding: 5px;
+    border-radius: 4px;
+}
+
+.status-approved {
+    background-color: #d4edda; /* Light green for approved */
+    color: #155724; /* Dark green text */
+    font-weight: bold;
+    padding: 5px;
+    border-radius: 4px;
+}
+
+.status-denied {
+    background-color: #f8d7da; /* Light red for denied */
+    color: #721c24; /* Dark red text */
+    font-weight: bold;
+    padding: 5px;
+    border-radius: 4px;
+}
+
+.status-borrowed {
+    background-color: #cce5ff; /* Light blue for borrowed */
+    color: #004085; /* Dark blue text */
+    font-weight: bold;
+    padding: 5px;
+    border-radius: 4px;
+}
+
+.status-returned {
+    background-color: #e2e3e5; /* Light grey for returned */
+    color: #6c757d; /* Grey text */
+    font-weight: bold;
+    padding: 5px;
+    border-radius: 4px;
+}
+
+.status-liable {
+    background-color: #fff3cd; /* Light yellow for liabilities */
+    color: #856404; /* Dark yellow text */
+    font-weight: bold;
+    padding: 5px;
+    border-radius: 4px;
+}
+</style>
 {% endblock %}
-{% block extra_scripts %}
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-    {% endblock %}
+{% block content %}
+<h2>Requests</h2>
+<br>
+
+<h3>Material Requests</h3>
+<table class="table table-striped table-bordered custom-rounded-table">
+  <thead class="thead-dark ">
+    <tr>
+      <th class="text-center">Control Number</th>
+      <th class="text-center">Title of Experiment</th>
+      <th class="text-center">Teacher</th>
+      <th class="text-center">Department</th>
+      <th class="text-center">Date of Experiment</th>
+      <th class="text-center">Time of Experiment</th>
+      <th class="text-center">Status</th>
+      <th class="text-center">Action</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% if material_requests %}
+    {% for request in material_requests %}
+      <tr>
+        <td>{{ request.request.control_number }}</td>
+        <td>{{ request.title_of_experiment }}</td>
+        <td>{{ request.teacher }}</td>
+        <td>{{ request.department }}</td>
+        <td>{{ request.request.request_on_date }}</td>
+        <td>{{ request.request.request_on_time }}</td>
+        <td><span class="{% if request.request.status == 'pending_approval' %}status-pending{% elif request.request.status == 'approved' %}status-approved{% elif request.request.status == 'denied' %}status-denied{% elif request.request.status == 'borrowed' %}status-borrowed{% elif request.request.status == 'returned' %}status-returned{% elif request.request.status == 'liable' %}status-liable{% endif %}">
+          {% if request.request.status == 'approved' and request.request.labtech_approval %} Reviewed & Approved by <br>{{ request.request.lab_technician }} {% else %} {{ request.request.get_status_display }} {% endif %}
+        </span></td>
+        <td>
+          {% if request.request.status == 'approved' and request.request.labtech_approval == False and user.user_type == 'lab_technician' %}
+          <a href="{% url 'approve_material_request' request.request.control_number %}" class="btn btn-info btn-sm">View</a>
+          {% else %}
+          <a href="{% url 'request_detail' request.request.control_number %}" class="btn btn-info btn-sm">View</a>
+          {% endif %}
+          {% if request.request.status == 'borrowed' or request.request.status == 'liable' %}
+          {% if user.user_type == 'lab_technician' %}
+          <a href="{% url 'return_items' request.request.control_number %}" class="btn btn-info btn-sm">Return Items</a>
+          {% endif %}
+          {% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+  {% else %}
+    <tr>
+      <td colspan="8" class="text-center">No material requests available.</td>
+    </tr>
+  {% endif %}
+  </tbody>
+</table>
+
+{% if user.user_type == 'lab_technician' %}
+<h3>Lab Apparel Requests</h3>
+<table class="table table-striped table-bordered custom-rounded-table">
+  <thead class="thead-dark ">
+    <tr>
+      <th class="text-center">Control Number</th>
+      <th class="text-center">Student</th>
+      <th class="text-center">Course & Year</th>
+      <th class="text-center">Borrowed Item</th>
+      <th class="text-center">Request Date</th>
+      <th class="text-center">Request Time</th>
+      <th class="text-center">Status</th>
+      <th class="text-center">Action</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% if lab_apparel_requests %}
+    {% for request in lab_apparel_requests %}
+      <tr>
+        <td>{{ request.request.control_number }}</td>
+        <td>{{ request.student }}</td>
+        <td>{{ request.course_and_year }}</td>
+        <td>{{ request.get_borrowed_item_display }}</td>
+        <td>{{ request.request.request_on_date }}</td>
+        <td>{{ request.request.request_on_time }}</td>
+        <td><span class="{% if request.request.status == 'pending_approval' %}status-pending{% elif request.request.status == 'approved' %}status-approved{% elif request.request.status == 'denied' %}status-denied{% elif request.request.status == 'borrowed' %}status-borrowed{% elif request.request.status == 'returned' %}status-returned{% elif request.request.status == 'liable' %}status-liable{% endif %}">
+          {% if request.request.status == 'approved' and request.request.labtech_approval %} Reviewed & Approved by {{ request.request.lab_technician }} {% else %} {{ request.request.get_status_display }} {% endif %}
+        </span></td>
+        <td>
+          {% if request.request.status == 'pending_approval' %}
+          <a href="{% url 'approve_lab_apparel_request' request.request.control_number %}" class="btn btn-info btn-sm">View</a>
+          {% else %}
+          <a href="" class="btn btn-info btn-sm">View</a>
+          {% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+  {% else %}
+    <tr>
+      <td colspan="8" class="text-center">No lab apparel requests available.</td>
+    </tr>
+  {% endif %}
+  </tbody>
+</table>
+{% endif %}
+{% endblock %}

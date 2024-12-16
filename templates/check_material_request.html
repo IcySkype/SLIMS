@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <h1>Check Material Request: {{ material_request.subject }} - {{ material_request.title_of_experiment }}</h1>
-
+<h2>Control Number {{material_request.request.control_number}}</h2>
 <form method="POST">
   {% csrf_token %}
 
@@ -18,10 +18,10 @@
     <tbody>
       {% for material_in_request in materials_in_request %}
         <tr>
-          <td>{{ material_in_request.material.name }}</td>
+          <td>{{ material_in_request.item.name }}</td>
           <td>{{ material_in_request.quantity }}</td>
           <td>{{ material_in_request.unit }}</td>
-          <td>{{ material_in_request.material.quantity }}</td>
+          <td>{{ material_in_request.item.stock }}</td>
           <td>
             <select id="status_{{ material_in_request.id }}" name="status_{{ material_in_request.id }}">
               <option value="denied" {% if material_in_request.status == 'denied' %} selected {% endif %}>Denied</option>
@@ -34,6 +34,7 @@
   </table>
 
   <div>
+    <button type="submit" name="back" value="1">Back</button>
     <button type="submit" name="approve_request" value="1">Approve Request</button>
     <button type="submit" name="deny_request" value="1">Deny Request</button>
   </div>

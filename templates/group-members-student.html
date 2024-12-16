@@ -6,48 +6,68 @@
 {% endblock %}
 
 {% block content %}
-<div class="table-container">
-    <form method="POST">
-        <h2>New Materials Request</h2>
+<div class="container my-4">
+    <form method="POST" class="p-4 bg-light shadow-sm rounded">
+        <h2 class="mb-4">New Materials Request</h2>
         {% csrf_token %}
         {{ wizard.management_form }}
         {{ wizard.form.management_form }}
-    <table class="table">
-        <thead>
-            <th>Members</th>
-            <th>ID No.</th>
-            <th>First Name</th>
-            <th>Surname</th>
-            <th>Contact No.</th>
-        </thead>
-        <tbody>
-            {% for form in wizard.form.forms %}
-                <tr class="student-entry">
-                    {% if forloop.counter == 1 %}
-                    <td>Leader</td>
-                    {% else %}
-                    <td>Leader</td>
-                    {% endif %}
-                    <td>{{ form.student_id }}</td>
-                    <td>{{ form.first_name }}</td>
-                    <td>{{ form.surname }}</td>
-                    <td>{{ form.contact_number }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <div>
-        <button type="button" id="add-member-btn">Add Member to List</button>
-    </div>
 
-    <button type="submit" class="proceed-button">Done</button>
+        <!-- Members Table -->
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">Role</th>
+                        <th scope="col">ID No.</th>
+                        <th scope="col">First Name</th>
+                        <th scope="col">Surname</th>
+                        <th scope="col">Contact No.</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="members-table">
+                    {% for form in wizard.form.forms %}
+                    <tr class="student-entry">
+                        <td>
+                            {% if forloop.counter == 1 %}
+                            Leader
+                            {% else %}
+                            Member
+                            {% endif %}
+                        </td>
+                        <td>{{ form.student_id }}</td>
+                        <td>{{ form.first_name }}</td>
+                        <td>{{ form.surname }}</td>
+                        <td>{{ form.contact_number }}</td>
+                        <td>
+                            {% if forloop.counter > 1 %}
+                            <button type="button" class="btn btn-sm btn-danger remove-member-btn">Remove</button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Add Member Button -->
+        <div class="d-flex justify-content-between mt-3">
+            <button type="button" id="add-member-btn" class="btn btn-primary btn-sm">
+                + Add Member to List
+            </button>
+        </div>
+        
+        <button type="submit" class="btn btn-block" style="background-color: #ff3399; color: white;  margin-top: 20px;">Done</button>
+    </form>
 </div>
 {% endblock %}
-{%block extra_scripts%}
+
+{% block extra_scripts %}
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const addMemberButton = document.getElementById("add-member-btn");
-        const membersTable = document.getElementById("members-table").querySelector("tbody");
+        const membersTable = document.getElementById("members-table");
 
         addMemberButton.addEventListener("click", function () {
             // Clone the last row in the table
@@ -63,15 +83,15 @@
             });
 
             // Update the role column
-            newRow.querySelector("td:first-child").textContent = "Member";
+            const roleCell = newRow.querySelector("td:first-child");
+            roleCell.textContent = "Member";
 
-            // Add a remove button if it doesn't exist
-            const removeButton = newRow.querySelector(".remove-member-btn");
-            if (!removeButton) {
-                const actionCell = newRow.querySelector("td:last-child");
+            // Add remove button if it doesn't exist
+            const actionCell = newRow.querySelector("td:last-child");
+            if (!actionCell.querySelector(".remove-member-btn")) {
                 const removeBtn = document.createElement("button");
                 removeBtn.type = "button";
-                removeBtn.className = "remove-member-btn";
+                removeBtn.className = "btn btn-sm btn-danger remove-member-btn";
                 removeBtn.textContent = "Remove";
                 actionCell.appendChild(removeBtn);
             }

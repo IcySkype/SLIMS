@@ -7,7 +7,8 @@ body {
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-size: 100% 100%;
-    position: fixed;
+    height: 100%;
+    width: 100%;
 }
 
 /* Navigation bar styling */
@@ -33,27 +34,28 @@ nav {
 
 /* Content area */
 .content {
+    margin-left: 250px;  /* Account for the sidebar's width */
     padding: 20px;
-    text-align: center;
-    margin-left: 270px; /* Space for the sidebar */
-    min-height: 100vh;
+    flex-grow: 1;
+    box-sizing: border-box;
 }
 
 /* Wrapper for flex layout */
 .wrapper {
     display: flex;
-    height: calc(100vh - 60px); /* Full height minus the navbar height */
+    min-height: 100vh;  /* Ensures the wrapper takes up the full height */
+    flex-direction: row;
 }
 
 /* Sidebar navigation styling */
 .sidebar {
     background-color: white;
-    width: 150px;
-    height: 100%;
+    width: 250px;
+    height: 100vh;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
     position: fixed;
-    top: 60px;
-    z-index: 99;
+    top: 0;
+    left: 0;
     padding: 20px 0;
 }
 
@@ -94,11 +96,12 @@ nav {
 
 /* Logo styling */
 .logo {
-    margin-top: 5px;
-    height: 50px;
-    margin-right: 15px;
-    margin-left: 15px;
-    position: sticky;
+    margin-top: 0px;  /* Removed extra margin */
+    height: 50px;  /* Ensures the logo is 50px high */
+    margin-left: 15px;  /* Space from the left side */
+    margin-right: 15px;  /* Space from the right side */
+    position: relative;  /* Ensure the logo is positioned normally within the navbar */
+    top: 50%;  /* Vertically center the logo in the navbar */
 }
 
 /* Logout styling */
@@ -314,9 +317,10 @@ input {
 
 /* Main content area */
 .main-content {
-    margin-left: 170px; /* Adjusted margin to give space for the sidebar */
+    flex-grow: 1;
+    margin-top: 60px;  /* To account for the fixed navbar */
+    margin-left: 250px;  /* To account for the fixed sidebar */
     padding: 20px;
-    min-height: 100vh;
-    background-color: #f9f9f9;
+    background-color: #fff;
     box-sizing: border-box;
 }

@@ -5,76 +5,247 @@
 {{ wizard.form.media }}
 {% endblock %}
 
-{% block content %}
-<div class="table-container">
-    <form method="POST">
-        <h2>New Materials Request</h2>
-        {% csrf_token %}
-        {{ wizard.management_form }}
-        {{ wizard.form.management_form }}
-        <div id="material-fields">
-            
-            <table class="table">
-                <thead><tr>
-                    <th colspan="3">MATERIALS/EQUIPMENT AND REAGENTS</th>
-                </tr>
-                <tr>
-                    <th>Qty</th>
-                    <th>Unit</th>
-                    <th>Description</th>
-                </tr></thead>
-                <tbody>
-                {% for form in wizard.form %}
-                <tr class="material-entry">
-                    <td>{{ form.quantity }}</td>
-                    <td>{{ form.unit }}</td>
-                    <td>{{ form.material }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-            </table>
-        </div>
-    
-        <div>
-            <button type="button" id="add-material-btn">Add Material to List</button>
-        </div>
-    
-        <button type="submit" class="proceed-button">Next</button>
-    </form>
-    
-    <!-- Material/Equipment Table -->
-    
-</div>
+{% block extra_styles %}
+<style>
+.custom-rounded-table {
+    border-radius: 8px !important; /* Round the table corners */
+    overflow: hidden; /* Prevent content from overflowing outside the rounded corners */
+}
+
+.custom-rounded-table th,
+.custom-rounded-table td {
+    border-radius: 0px; /* Optional: Ensure that table cell corners are squared */
+}
+
+.custom-rounded-table thead {
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px; /* Round the top corners of the header */
+}
+
+.custom-rounded-table tfoot {
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px; /* Round the bottom corners of the footer if applicable */
+}
+.custom-rounded-table input[name$='quantity'] {
+    width: 80px; /* Adjust the width to a reasonable size */
+    text-align: center; /* Optional: Center-align the number for better readability */
+}
+.custom-rounded-table input[name$='material_description'] {
+    width: 500px; /* Adjust to a larger width for better readability */
+}
+.custom-rounded-table input[name$='material_type'] {
+    width: 80px; /* Adjust to a larger width for better readability */
+}
+.custom-rounded-table input,
+.custom-rounded-table select {
+    width: auto; /* Adjust width based on content */
+    padding: 5px; /* Add padding for better appearance */
+    box-sizing: border-box; /* Ensure proper spacing */
+}
+</style>
 {% endblock %}
-{%block extra_scripts%}
+
+{% block content %}
+<div class="container my-4">
+    <div class="table-container">
+        <form method="POST">
+            <h2 class="mb-4">New Materials Request: Materials/Equipment & Reagents</h2>
+            {% csrf_token %}
+            {{ wizard.management_form }}
+            {{ wizard.form.management_form }}
+
+            <div id="material-fields">
+                <table class="table table-bordered table-hover custom-rounded-table">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Item</th>
+                            <th>Item Type</th>
+                            <th>Description</th>
+                            <th>Unit</th>
+                            <th>Qty</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="list-of-materials">
+                        {% for form in wizard.form %}
+                        <tr class="material-entry">
+                            <td>{{ form.item }}</td>
+                            <td>{{ form.material_type }}</td>
+                            <td>{{ form.material_description }}</td>
+                            <td>{{ form.unit }}</td>
+                            <td>{{ form.quantity }}</td>
+                            <td>
+                                <button type="button" class="btn btn-danger btn-sm remove-item-btn">-</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="d-flex justify-content-between mt-3">
+                <button type="button" id="add-item-btn" class="btn btn-primary btn-sm">+ Add Item to List</button>
+            </div>
+
+            <button type="submit" class="btn btn-block" style="background-color: #ff3399; color: white;  margin-top: 20px;">Next</button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
 <script>
-    document.getElementById("add-material-btn").addEventListener("click", function () {
+    document.getElementById("add-item-btn").addEventListener("click", function () {
     const materialFields = document.getElementById("material-fields");
-    const totalFormsInput = document.querySelector("#id_form-TOTAL_FORMS");
-    let totalForms = parseInt(totalFormsInput.value, 10);
+    const listOfMaterials = document.getElementById("list-of-materials"); // Target tbody by its ID
+    const totalFormsInput = document.querySelector("#id_2-TOTAL_FORMS");
+    const totalForms = parseInt(totalFormsInput.value, 10);  // Get the current number of forms
 
-    // Create a new row by cloning the empty form template
-    const newEntry = materialFields.querySelector(".material-entry:last-child").cloneNode(true);
-    const regex = new RegExp(`form-(\\d+)-`, "g");
+    // Clone the last row (this is the row that serves as the template for new rows)
+    const lastRow = listOfMaterials.querySelector(".material-entry:last-child");
+    const newEntry = lastRow.cloneNode(true);  // Deep clone the last form
 
-    // Update form indices
-    newEntry.innerHTML = newEntry.innerHTML.replace(regex, `form-${totalForms}-`);
-
-    Array.from(newEntry.querySelectorAll("[id], [name]")).forEach((element) => {
-        if (element.id) {
-            element.id = element.id.replace(regex, `form-${totalForms}-`);
-        }
-        if (element.name) {
-            element.name = element.name.replace(regex, `form-${totalForms}-`);
-        }
-        if (element.tagName === "INPUT" || element.tagName === "SELECT") {
-            element.value = ""; // Clear field values
+    // Clear the cloned form's data (excluding the DELETE checkbox)
+    Array.from(newEntry.querySelectorAll("input, select")).forEach((field) => {
+        if (field.name.indexOf("DELETE") === -1) {  // Don't clear the DELETE field
+            field.value = "";  // Clear the input values
         }
     });
 
-    // Append the new row and update the TOTAL_FORMS count
-    materialFields.querySelector("tbody").appendChild(newEntry);
+    // Update the new entry's fields with the correct index
+    Array.from(newEntry.querySelectorAll("input, select")).forEach((field) => {
+        const fieldName = field.name;
+        const fieldId = field.id;
+
+        if (fieldName) {
+            // Update the `name` attribute using the next index
+            field.name = updateFormFieldIndex(field.name, totalForms);
+        }
+
+        if (fieldId) {
+            // Update the `id` attribute using the next index
+            field.id = updateFormFieldIndex(field.id, totalForms);
+        }
+    });
+
+    // Append the new row to the table's tbody
+    listOfMaterials.appendChild(newEntry);
+
+    // Increment the total forms count
     totalFormsInput.value = totalForms + 1;
+
+    // Update the "remove" button for the new row
+    const removeBtn = newEntry.querySelector(".remove-item-btn");
+    removeBtn.addEventListener("click", function () {
+        newEntry.remove();
+        updateFormIndices();  // Reindex the remaining forms
+    });
+
+    // Ensure the "remove" button is working for the initial row as well
+    toggleRemoveButtons();
+});
+
+// Update the form indices when a row is removed
+function updateFormIndices() {
+    const rows = document.querySelectorAll(".material-entry");
+    const totalFormsInput = document.querySelector("#id_2-TOTAL_FORMS");
+
+    // Update the indices for each row's fields
+    rows.forEach((row, index) => {
+        Array.from(row.querySelectorAll("input, select")).forEach((field) => {
+            // Update the `id` and `name` attributes to reflect the new index
+            if (field.id) {
+                field.id = field.id.replace(/-\d+-/, `-${index}-`);
+            }
+            if (field.name) {
+                field.name = field.name.replace(/-\d+-/, `-${index}-`);
+            }
+        });
+    });
+
+    // Update the total forms count
+    totalFormsInput.value = rows.length;
+
+    // Check visibility of "-" buttons (disable/remove them when only 1 row exists)
+    toggleRemoveButtons();
+}
+
+// Function to enable or disable "remove" buttons based on row count
+function toggleRemoveButtons() {
+    const rows = document.querySelectorAll(".material-entry");
+    const removeButtons = document.querySelectorAll(".remove-item-btn");
+
+    if (rows.length <= 1) {
+        removeButtons.forEach((button) => button.disabled = true); // Disable remove buttons when there's 1 row
+    } else {
+        removeButtons.forEach((button) => button.disabled = false); // Enable remove buttons
+    }
+}
+
+// Initial check on page load
+toggleRemoveButtons();
+
+// Helper function to update the name and id based on the index
+function updateFormFieldIndex(field, index) {
+    return field.replace(/-\d+-/, `-${index}-`);
+}
+
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    // Define the Django UNIT_CHOICES equivalent in JavaScript
+    const UNIT_CHOICES = {
+        "None": "N/A",
+        "g": "Grams", // Mass
+        "mg": "Milligrams", // Mass
+        "mL": "Milliliters", // Volume
+        "L": "Liters" // Volume
+    };
+
+    // Add event listener to the parent container for delegation
+    const tableContainer = document.querySelector("#material-fields"); // Matches your table container
+    if (tableContainer) {
+        tableContainer.addEventListener("change", function (event) {
+            const target = event.target;
+
+            // Check if the event is coming from an item select dropdown
+            if (target.matches("select[name$='item']")) {
+                const materialId = target.value;  // Get the selected material ID
+                const row = target.closest("tr"); // Get the row to update its fields
+
+                if (materialId) {
+                    // Send AJAX request to fetch material details
+                    fetch(`/get-material-details/?material_id=${materialId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (!data.error) {
+                                // Update the fields in the same row
+                                row.querySelector("input[name$='material_type']").value = data.material_type;
+                                row.querySelector("input[name$='material_description']").value = data.description;
+
+                                // Update the unit select field
+                                const unitSelect = row.querySelector("select[name$='unit']");
+                                unitSelect.innerHTML = "";  // Clear existing options
+
+                                // Loop through data.unit_options and add appropriate choices
+                                data.unit_options.forEach(option => {
+                                    if (UNIT_CHOICES.hasOwnProperty(option)) {
+                                        const opt = document.createElement("option");
+                                        opt.value = option;
+                                        opt.textContent = UNIT_CHOICES[option]; // Use the display name
+                                        unitSelect.appendChild(opt);
+                                    }
+                                });
+                            } else {
+                                alert(data.error);
+                            }
+                        })
+                        .catch(error => console.error("Error fetching material details:", error));
+                }
+            }
+        });
+    }
 });
 </script>
-{%endblock%}
+{% endblock %}
