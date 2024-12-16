@@ -51,10 +51,10 @@ Sci-Lab Inventory Management System (SLIMS) is a web application designed to man
    python manage.py migrate
    ```
 2. Create a superuser:
-3. ```bash
+   ```bash
    python manage.py createsuperuser
    ```
-4. Run the development server:
+3. Run the development server:
    ```bash
    python manage.py runserver
    ```
