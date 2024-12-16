@@ -55,7 +55,7 @@ class Request(models.Model):
     status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='pending_approval')
 
     def __str__(self):
-        return self.control_number
+        return f"Control No. {self.control_number}"
 
 # MaterialRequest model
 class MaterialRequest(models.Model):
@@ -75,7 +75,8 @@ class MaterialRequest(models.Model):
 class ItemInRequest(models.Model):
     STATUS_CHOICES = [
         ('pending', 'Pending'),
-        ('denied', 'Denied'), 
+        ('denied', 'Denied'),
+        ('approved', 'Approved'), 
         ('ready', 'Ready'),
         ('borrowed', 'Borrowed'),
         ('returned', 'Returned'),
@@ -83,7 +84,7 @@ class ItemInRequest(models.Model):
         ('used', 'Used')
     ]
     UNIT_CHOICES = [
-        (None, 'N/A'),
+        ('None', 'N/A'),
         ('g', 'Grams'), #Mass
         ('mg', 'Milligrams'), #Mass
         ('mL', 'Milliliters'), #Volume
@@ -95,19 +96,12 @@ class ItemInRequest(models.Model):
     unit = models.CharField(max_length=20, choices=UNIT_CHOICES, default=None, null=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
 
-    def clean(self):
-        # Validate unit based on material type
-        if self.item.material_type == 'equipment' and self.unit:
-            raise ValidationError("Equipment should not have a unit.")
-        elif self.item.material_type in ['material', 'reagent'] and not self.unit:
-            raise ValidationError("Materials and reagents require a unit.")
-
     def __str__(self):
         return f"Control No. {self.request.request.control_number} Item: {self.item} qty. {self.quantity}"
 
 # Group model
 class Group(models.Model):
-    materials_request = models.ForeignKey(MaterialRequest, on_delete=models.CASCADE, related_name='groups')
+    materials_request = models.OneToOneField(MaterialRequest, on_delete=models.CASCADE, related_name='groups')
     leader = models.ForeignKey(Student, on_delete=models.SET_NULL, related_name='group_leader', null=True)
     members = models.ManyToManyField(Student, related_name='group_member' )
 
@@ -120,8 +114,6 @@ class LabApparelRequest(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     course_and_year = models.CharField(max_length=100)
     department = models.CharField(max_length=100)
-    date_borrowed = models.DateField()
-    time_borrowed = models.TimeField()
     borrowed_item = models.CharField(
         max_length=50, choices=[('lab_gown', 'Lab Gown'), ('lab_apron', 'Lab Apron')]
     )
@@ -138,3 +130,19 @@ class Liability(models.Model):
 
     def __str__(self):
         return f"Liability for Student ID {self.student.student_id} - Control No. {self.request.control_number}"
+    
+class MaterialUsageLog(models.Model):
+    ACTION_CHOICES = [
+        ('restock', 'Restock'),
+        ('usage', 'Usage'),
+        ('return', 'Return'),
+    ]
+    
+    material = models.ForeignKey(Material, on_delete=models.CASCADE, related_name='usage_logs')
+    action = models.CharField(max_length=10, choices=ACTION_CHOICES)
+    quantity = models.PositiveIntegerField()
+    date = models.DateTimeField(default=timezone.now)
+    remarks = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.action} - {self.material.name} - {self.quantity} units on {self.date}"

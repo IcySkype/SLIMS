@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block extra_styles %}
+<style>
+.custom-rounded-table {
+    border-radius: 8px !important; /* Round the table corners */
+    overflow: hidden; /* Prevent content from overflowing outside the rounded corners */
+}
+
+.custom-rounded-table th,
+.custom-rounded-table td {
+    border-radius: 0px; /* Ensure table cell corners are squared */
+}
+
+.custom-rounded-table thead {
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px; /* Round the top corners of the header */
+}
+
+.custom-rounded-table tfoot {
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px; /* Round the bottom corners of the footer */
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Request Details{% if user.user_type == 'lab_technician' and request.status == 'approved' and request.labtech_approval %} - Ready for Borrowing{% endif %}</h1>
+    {% if user.user_type == 'lab_technician' and request.status == 'approved' and request.labtech_approval %}
+    <h4>Please prepare the requested items</h4>
+    {% endif %}
+    {% if is_material_request %}
+    <h2 class="mb-3">Material Requisition</h2>
+    
+    <ul class="list-group mb-4">
+        <li class="list-group-item"><strong>Control Number:</strong> {{ request.control_number }}</li>
+        <li class="list-group-item"><strong>Subject:</strong> {{ material_request.subject }}</li>
+        <li class="list-group-item"><strong>Department:</strong> {{ material_request.department }}</li>
+        <li class="list-group-item"><strong>Experiment Number:</strong> {{ material_request.experiment_number }}</li>
+        <li class="list-group-item"><strong>Group Number:</strong> {{ material_request.group_number }}</li>
+        <li class="list-group-item"><strong>Date of Experiment:</strong> {{ request.request_on_date }}</li>
+        <li class="list-group-item"><strong>Time of Experiment:</strong> {{ request.request_on_time }}</li>
+        <li class="list-group-item"><strong>Title of Experiment:</strong> {{ material_request.title_of_experiment }}</li>
+        <li class="list-group-item"><strong>Status:</strong> {{ request.get_status_display }}</li>
+        <li class="list-group-item"><strong>Teacher:</strong> {{ material_request.teacher }}</li>
+        {% if request.labtech_approval %}
+        <li class="list-group-item"><strong>Noted by Lab Technician:</strong> {{ request.lab_technician }}</li>
+        {% endif %}
+    </ul>
+
+    <h3>Item List</h3>
+    
+    <table class="table table-bordered table-striped custom-rounded-table mb-4">
+        <thead class="table-dark">
+            <tr>
+                <td>Name</td>
+                <td>Type</td>
+                <td>Description</td>
+                <td>Unit</td>
+                <td>Quantity</td>
+                <td>Status</td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>{{ item.item.name }}</td>
+                <td>{{ item.item.material_type }}</td>
+                <td>{{ item.item.description }}</td>
+                <td>{{ item.get_unit_display }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.get_status_display }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h3>Group Members</h3>
+    <table class="table table-bordered table-striped custom-rounded-table mb-4">
+        <thead class="table-dark">
+            <tr>
+                <td></td>
+                <td>Student Name</td>
+                <td>ID No.</td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for member in group.members.all %}
+            <tr>
+                <td>{% if group.leader == member %}<strong>Leader</strong>{% else %}Member{% endif %}</td>
+                <td>{{ member }}</td>
+                <td>{{ member.student_id }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% if teacher_can_approve_or_deny %}
+    <form method="post" action=".">
+        {% csrf_token %}
+        <button type="submit" name="action" value="approve" class="btn btn-success">Approve</button>
+        <button type="submit" name="action" value="deny" class="btn btn-danger">Deny</button>
+    </form>
+    {% endif %}
+
+    {% elif lab_apparel_request %}
+
+    <h2 class="mb-3">Lab Apparel Borrowing</h2>
+    <ul class="list-group mb-4">
+        <li class="list-group-item"><strong>Control Number:</strong> {{ request.control_number }}</li>
+        <li class="list-group-item"><strong>Name:</strong> {{ lab_apparel_request.student }}</li>
+        <li class="list-group-item"><strong>ID No.:</strong> {{ lab_apparel_request.student.student_id }}</li>
+        <li class="list-group-item"><strong>Course and Year:</strong> {{ lab_apparel_request.course_and_year }}</li>
+        <li class="list-group-item"><strong>Department:</strong> {{ lab_apparel_request.department }}</li>
+        <li class="list-group-item"><strong>Date Borrowed:</strong> {{ request.request_on_date }}</li>
+        <li class="list-group-item"><strong>Time Borrowed:</strong> {{ request.request_on_time }}</li>
+        <li class="list-group-item"><strong>Borrowed Item:</strong> {{ lab_apparel_request.get_borrowed_item_display }}</li>
+        <li class="list-group-item"><strong>Status:</strong> {{ request.get_status_display }}</li>
+        {% if request.labtech_approval %}
+        <li class="list-group-item"><strong>Noted by Lab Technician:</strong> {{ request.lab_technician }}</li>
+        {% endif %}
+    </ul>
+
+    {% else %}
+    <p class="text-danger">Error: No additional details available for this request.</p>
+    {% endif %}
+
+    <a href="{% url 'request_list' %}" class="btn btn-primary">Back to Requests</a>
+    {% if user.user_type == 'lab_technician' and request.status == 'approved' and request.labtech_approval %}
+    <form method="post" action="{% url 'lending_request' request.control_number %}">
+        {% csrf_token %}
+        <button type="submit" name="action" value="lend" class="btn btn-success">Ready for Lending</button>
+    </form>
+    {% endif %}
+</div>
+{% endblock %}

@@ -5,41 +5,99 @@
 {{ wizard.form.media }}
 {% endblock %}
 
-{% block content %}
-<form method="post">
-    {% csrf_token %}
-    {{ wizard.management_form }}
-    <h2>REMINDERS:</h2>
-    <div class="scrollable-container">
-        <p>
-            ∙This duly accomplished requisition form must be submitted at least two (2) days prior to the scheduled
-            laboratory class.<br>
-            <br>
-            ∙List all needed materials and chemicals/reagents in this form. Additional items not listed may be added only after all requisition for the class had been served.<br>
-            <br>
-            ∙Show proof of cleaning materials (per class) upon receiving requested Items.<br>
-            <br>
-            ∙Double check the issued materials/glassware while you are still at the counter. Otherwise, any damage and/or lack materials from the released items will be held accountable to the requestors.<br>
-            <br>
-            ∙Return clean all borrowed materials 10-15 minutes before the end of each laboratory period. Lockeapparatus such as microscopes must be returned in its proper placement.<br>
-            <br>
-            ∙All breakages and/or lost Items must be reported to the Science Laboratory staff Immediately and
-            must be replaced with the same quantity and quality not later than a week after the said experiment.<br>
-            <br>
-            ∙No materials and/or samples must be left in any of the facilities under the Science Laboratory without
-            proper labeling and informing the office (AD 409). The Science Laboratory will not be held responsible
-            for any lost items and/or materials from irresponsible requestors and laboratory users.<br>
-            <br>
-            ∙Be well-guided from the information posted in the laboratories, laboratory manuals, Science
-            Laboratory e-handbook and the announcement board for laboratory use, guidelines, and updates.<br>
-            <br>
-            ∙Using any of the laboratories and/or laboratory materials controlled by the Science Laboratory means
-            that users understand and strictly adhere to the laboratory rules and guidelines provided by the
-            Science Laboratory.
-        </p>
-    </div>
-    {{ wizard.form.as_p }}
-    <button type="submit" class="proceed-button">Next</button>
-</form>
+{% block extra_styles %}
+<style>
+    /* Custom scrollable container with thinner scrollbar */
+    .scrollable-container {
+        max-height: 400px;
+        overflow-y: auto;
+        border: 1px solid #ccc;
+        padding: 20px;
+        border-radius: 8px;
+        background-color: #f9f9f9;
+        margin-bottom: 20px;
+    }
 
+    /* Thinner scrollbar */
+    .scrollable-container::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .scrollable-container::-webkit-scrollbar-thumb {
+        background-color: #888;
+        border-radius: 4px;
+    }
+
+    .scrollable-container::-webkit-scrollbar-thumb:hover {
+        background-color: #555;
+    }
+
+    /* Styling the list within the scrollable container */
+    .scrollable-container ul {
+        padding-left: 20px;
+        list-style-type: disc;
+    }
+
+    /* Form Group Styling */
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    /* Align the checkbox and its label properly */
+    .agreement-checkbox {
+        display: inline-block;  /* Aligns the checkbox and label inline */
+        margin-left: 10px;  /* Add spacing between the label and checkbox */
+    }
+
+    .agreement-label {
+        display: inline-block;  /* Keeps the label inline with the checkbox */
+        margin-bottom: 0;  /* Removes extra bottom margin */
+        font-size: 1rem;  /* Adjust font size as needed */
+    }
+
+    /* Style for the button */
+    .btn-block {
+        width: 100%;
+    }
+    p {
+    display: inline-flex; /* Use flexbox to line up checkbox and text */
+    align-items: center;  /* Vertically align the checkbox and text */
+    margin: 0;            /* Remove default margins */
+    white-space: nowrap;  /* Prevent the text from breaking into multiple lines */
+    }
+
+    .checkbox-control {
+        margin: 0 5px 0 0; /* Remove left/right margins from checkbox */
+        padding: 0;        /* Remove any padding */
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="mt-4">
+    <form method="post">
+        {% csrf_token %}
+        {{ wizard.management_form }}
+        
+        <!-- Reminders Section -->
+        <h1 class="mb-4">REMINDERS:</h1>
+        <div class="scrollable-container">
+            <ul>
+                <li> This duly accomplished requisition form must be submitted at least two (2) days prior to the scheduled laboratory class.</li>
+                <li> List all needed materials and chemicals/reagents in this form. Additional items not listed may be added only after all requisition for the class had been served.</li>
+                <li> Show proof of cleaning materials (per class) upon receiving requested Items.</li>
+                <li> Double-check the issued materials/glassware while you are still at the counter. Otherwise, any damage and/or lack materials from the released items will be held accountable to the requestors.</li>
+                <li> Return clean all borrowed materials 10-15 minutes before the end of each laboratory period. Lock apparatus such as microscopes must be returned in its proper placement.</li>
+                <li> All breakages and/or lost items must be reported to the Science Laboratory staff immediately and must be replaced with the same quantity and quality not later than a week after the said experiment.</li>
+                <li> No materials and/or samples must be left in any of the facilities under the Science Laboratory without proper labeling and informing the office (AD 409). The Science Laboratory will not be held responsible for any lost items and/or materials from irresponsible requestors and laboratory users.</li>
+                <li> Be well-guided from the information posted in the laboratories, laboratory manuals, Science Laboratory e-handbook, and the announcement board for laboratory use, guidelines, and updates.</li>
+                <li> Using any of the laboratories and/or laboratory materials controlled by the Science Laboratory means that users understand and strictly adhere to the laboratory rules and guidelines provided by the Science Laboratory.</li>
+            </ul>
+        </div>
+        <!-- Form Display -->
+            <p> I agree to the terms and conditions  {{ wizard.form.agreement }}</p>
+        <!-- Next Button -->
+        <button type="submit" class="btn btn-block" style="background-color: #ff3399; color: white;">Next</button>
+    </form>
+</div>
 {% endblock %}

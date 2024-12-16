@@ -23,6 +23,53 @@
 .pagination-container {
     margin-top: 20px; /* Add space between the table and pagination */
 }
+.status-pending {
+    background-color: #f8d7da; /* Light red for pending */
+    color: #721c24; /* Dark red text */
+    font-weight: bold;
+    padding: 5px;
+    border-radius: 4px;
+}
+
+.status-approved {
+    background-color: #d4edda; /* Light green for approved */
+    color: #155724; /* Dark green text */
+    font-weight: bold;
+    padding: 5px;
+    border-radius: 4px;
+}
+
+.status-denied {
+    background-color: #f8d7da; /* Light red for denied */
+    color: #721c24; /* Dark red text */
+    font-weight: bold;
+    padding: 5px;
+    border-radius: 4px;
+}
+
+.status-borrowed {
+    background-color: #cce5ff; /* Light blue for borrowed */
+    color: #004085; /* Dark blue text */
+    font-weight: bold;
+    padding: 5px;
+    border-radius: 4px;
+}
+
+.status-returned {
+    background-color: #e2e3e5; /* Light grey for returned */
+    color: #6c757d; /* Grey text */
+    font-weight: bold;
+    padding: 5px;
+    border-radius: 4px;
+}
+
+.status-liable {
+    background-color: #fff3cd; /* Light yellow for liabilities */
+    color: #856404; /* Dark yellow text */
+    font-weight: bold;
+    padding: 5px;
+    border-radius: 4px;
+}
 </style>
 {% endblock %}
 {% block content %}
@@ -37,8 +84,8 @@
       <th class="text-center">Title of Experiment</th>
       <th class="text-center">Teacher</th>
       <th class="text-center">Department</th>
-      <th class="text-center">Request Date</th>
-      <th class="text-center">Request Time</th>
+      <th class="text-center">Date of Experiment</th>
+      <th class="text-center">Time of Experiment</th>
       <th class="text-center">Status</th>
       <th class="text-center">Action</th>
     </tr>
@@ -51,11 +98,22 @@
         <td>{{ request.title_of_experiment }}</td>
         <td>{{ request.teacher }}</td>
         <td>{{ request.department }}</td>
-        <td>{{ request.request_on_date }}</td>
-        <td>{{ request.request_on_time }}</td>
-        <td>{{ request.get_status_display }}</td>
+        <td>{{ request.request.request_on_date }}</td>
+        <td>{{ request.request.request_on_time }}</td>
+        <td><span class="{% if request.request.status == 'pending_approval' %}status-pending{% elif request.request.status == 'approved' %}status-approved{% elif request.request.status == 'denied' %}status-denied{% elif request.request.status == 'borrowed' %}status-borrowed{% elif request.request.status == 'returned' %}status-returned{% elif request.request.status == 'liable' %}status-liable{% endif %}">
+          {% if request.request.status == 'approved' and request.request.labtech_approval %} Reviewed & Approved by <br>{{ request.request.lab_technician }} {% else %} {{ request.request.get_status_display }} {% endif %}
+        </span></td>
         <td>
-          <a href="{% url 'view_request' request.request.pk %}" class="btn btn-info btn-sm">View</a>
+          {% if request.request.status == 'approved' and request.request.labtech_approval == False and user.user_type == 'lab_technician' %}
+          <a href="{% url 'approve_material_request' request.request.control_number %}" class="btn btn-info btn-sm">View</a>
+          {% else %}
+          <a href="{% url 'request_detail' request.request.control_number %}" class="btn btn-info btn-sm">View</a>
+          {% endif %}
+          {% if request.request.status == 'borrowed' or request.request.status == 'liable' %}
+          {% if user.user_type == 'lab_technician' %}
+          <a href="{% url 'return_items' request.request.control_number %}" class="btn btn-info btn-sm">Return Items</a>
+          {% endif %}
+          {% endif %}
         </td>
       </tr>
     {% endfor %}
@@ -89,12 +147,18 @@
         <td>{{ request.request.control_number }}</td>
         <td>{{ request.student }}</td>
         <td>{{ request.course_and_year }}</td>
-        <td>{{ request.borrowed_item }}</td>
-        <td>{{ request.request_on_date }}</td>
-        <td>{{ request.request_on_time }}</td>
-        <td>{{ request.get_status_display }}</td>
+        <td>{{ request.get_borrowed_item_display }}</td>
+        <td>{{ request.request.request_on_date }}</td>
+        <td>{{ request.request.request_on_time }}</td>
+        <td><span class="{% if request.request.status == 'pending_approval' %}status-pending{% elif request.request.status == 'approved' %}status-approved{% elif request.request.status == 'denied' %}status-denied{% elif request.request.status == 'borrowed' %}status-borrowed{% elif request.request.status == 'returned' %}status-returned{% elif request.request.status == 'liable' %}status-liable{% endif %}">
+          {% if request.request.status == 'approved' and request.request.labtech_approval %} Reviewed & Approved by {{ request.request.lab_technician }} {% else %} {{ request.request.get_status_display }} {% endif %}
+        </span></td>
         <td>
-          <a href="{% url 'view_request' request.request.pk %}" class="btn btn-info btn-sm">View</a>
+          {% if request.request.status == 'pending_approval' %}
+          <a href="{% url 'approve_lab_apparel_request' request.request.control_number %}" class="btn btn-info btn-sm">View</a>
+          {% else %}
+          <a href="" class="btn btn-info btn-sm">View</a>
+          {% endif %}
         </td>
       </tr>
     {% endfor %}

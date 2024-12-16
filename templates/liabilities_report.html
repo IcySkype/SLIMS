@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <h2>Student Liabilities Report</h2>
+
+    <!-- Filter Form -->
+    <form method="get">
+        <label for="start_date">Start Date:</label>
+        <input type="date" name="start_date" value="{{ start_date }}">
+        <label for="end_date">End Date:</label>
+        <input type="date" name="end_date" value="{{ end_date }}">
+        <button type="submit" class="btn btn-primary">Filter</button>
+    </form>
+
+    <!-- CSV Export Button -->
+    <a href="{% url 'liabilities_report_csv' %}" class="btn btn-success mt-3">Export to CSV</a>
+
+    <!-- Table -->
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Student ID</th>
+                <th>Student Name</th>
+                <th>Control No.</th>
+                <th>Complied</th>
+                <th>Remarks</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for liability in liabilities %}
+            <tr>
+                <td>{{ liability.student.student_id }}</td>
+                <td>{{ liability.student }}</td>
+                <td>{{ liability.request.control_number }}</td>
+                <td>{{ liability.is_complied }}</td>
+                <td>{{ liability.remarks }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

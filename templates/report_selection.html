@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <h2>Select Report Type</h2>
+    
+    <!-- Report Selection Form -->
+    <form method="get" action=".">
+        <label for="report_type">Choose a report type:</label>
+        <select name="report_type" id="report_type" class="form-control">
+            <option value="material_usage">Material Usage Report</option>
+            <option value="student_requests">Student Requests Report</option>
+            <option value="liabilities">Student Liabilities Report</option>
+            <!-- Add more options for other reports -->
+        </select>
+        <button type="submit" class="btn btn-primary mt-3">Generate Report</button>
+    </form>
+</div>
+{% endblock %}

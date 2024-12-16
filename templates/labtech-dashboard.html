@@ -5,32 +5,50 @@
 <link rel="stylesheet" href="{% static 'css/styles-labtech.css' %}">
 {% endblock %}
 {% block content %}
-<div class="dashboard-grid">
-    <div class="card">
-        <h3>Class Schedule</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Subject</th>
-                    <th>Material</th>
-                    <th>Type</th>
-                    <th>Time</th>
-                    <th>Date</th>
-                    <th>Data</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Table rows for class schedule -->
-            </tbody>
-        </table>
+<div class="dashboard-grid container">
+    <div class="row">
+        <!-- Weekly Schedule Widget -->
+        <div class="col-lg-12 col-md-12">
+            <div class="card p-3">
+                <h3>Schedule for the Week<br> ({{ week_start }} - {{ week_end }})</h3>
+                <table class="table table-bordered table-striped">
+                    <thead class="thead-dark">
+                        <tr>
+                            {% for day in week_schedule_names %}
+                                <th>{{ day }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row_index in week_schedule %}
+                            <tr>
+                                {% for task in row_index %}
+                                    <td>
+                                        {% if task %}
+                                            <strong>{{ task.time }}</strong><br>
+                                            {{ task.description }}
+                                        {% else %}
+                                            &nbsp;
+                                        {% endif %}
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
-    <div class="card calendar">
-        <h3>March 2023</h3>
-        <p>Calendar goes here...</p>
-    </div>
-    <div class="card request-overview">
-        <h3>Request Overview</h3>
-        <p>Overview details here...</p>
-    </div>
+    
+        <!-- Request Overview Card -->
+        <div class="col-lg-12 col-md-12">
+            <div class="card p-3">
+                <h3>Request Overview</h3>
+                <p>There's {{requestcount}} requests for this week.</p>
+                <p>{{l_count}} lab apparel requests.</p>
+                <p>{{m_count}} material requisition requests.</p>
+            </div>
+        </div>
+    
 </div>
 {% endblock %}

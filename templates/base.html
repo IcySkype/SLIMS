@@ -78,6 +78,7 @@
             overflow-y: auto;
             max-height: calc(100vh - 140px);
         }
+        
         .main-content::-webkit-scrollbar {
             width: 10px; /* Width of the scrollbar */
         }
@@ -133,7 +134,7 @@
                                 </li>
                             </a>
                         {% elif user.user_type == 'lab_technician' %}
-                            <a href="#">
+                            <a href="{% url 'reports' %}">
                                 <li {% if active_page == 'reports' %}class="active"{% endif %}>
                                     <i class="fas fa-chart-bar"></i>Reports
                                 </li>

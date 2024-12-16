@@ -2,18 +2,21 @@
 
 {% block content %}
 <div class="container">
+    {% if lab_apparel_request.request.status == 'borrowed' %}
     <h2>Return Lab Apparel</h2>
-
+    {% elif lab_apparel_request.request.status == 'liable' %}
+    <h2>Comply Liabilities for Control No. {{ lab_apparel_request.request.control_number }}</h2>
+    {% endif %}
     <h3>Lab Apparel Request Details</h3>
     <ul>
-        <li><strong>Control Number:</strong> {{ lab_apparel_request.control_number }}</li>
+        <li><strong>Control Number:</strong> {{ lab_apparel_request.request.control_number }}</li>
         <li><strong>Student:</strong> {{ lab_apparel_request.student }}</li>
         <li><strong>Course and Year:</strong> {{ lab_apparel_request.course_and_year }}</li>
         <li><strong>Department:</strong> {{ lab_apparel_request.department }}</li>
-        <li><strong>Date Borrowed:</strong> {{ lab_apparel_request.date_borrowed }}</li>
-        <li><strong>Time Borrowed:</strong> {{ lab_apparel_request.time_borrowed }}</li>
+        <li><strong>Date Borrowed:</strong> {{ lab_apparel_request.request.request_on_date }}</li>
+        <li><strong>Time Borrowed:</strong> {{ lab_apparel_request.request.request_on_time }}</li>
         <li><strong>Borrowed Item:</strong> {{ lab_apparel_request.get_borrowed_item_display }}</li>
-        <li><strong>Status:</strong> {{ lab_apparel_request.get_status_display }}</li>
+        <li><strong>Status:</strong> {{ lab_apparel_request.request.get_status_display }}</li>
     </ul>
 
     {% if penalty %}
@@ -25,7 +28,7 @@
 
     <form method="post">
         {% csrf_token %}
-        <button type="submit" class="btn btn-primary">Return Lab Apparel</button>
+        <button type="submit" class="btn btn-primary">{% if lab_apparel_request.request.status == 'liable' %}Replace/{% endif %}Return Lab Apparel</button>
     </form>
 </div>
 {% endblock %}

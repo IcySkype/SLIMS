@@ -24,6 +24,10 @@
 .pagination-container {
     margin-top: 20px; /* Add space between the table and pagination */
 }
+.custom-rounded-table tbody tr.out-of-stock {
+    background-color: #f8d7da !important; /* Ensure it overrides the striped rows */
+    color: #721c24; /* Dark red text for emphasis */
+}
 </style>
 {% endblock %}
 
@@ -34,7 +38,7 @@
   <!-- Search Form -->
   <form method="get" class="mb-4">
     <div class="input-group">
-      <input type="text" class="form-control" name="q" placeholder="Search by name, supplier, description, or last ordered..." value="{{ request.GET.q }}">
+      <input type="text" class="form-control" name="q" placeholder="Search by name, supplier, description, or item type..." value="{{ request.GET.q }}">
       <div class="input-group-append">
         <button class="btn btn-outline-secondary" type="submit">Search</button>
       </div>
@@ -55,7 +59,7 @@
     </thead>
     <tbody>
       {% for material in materials %}
-        <tr>
+        <tr class="{% if material.stock == 0 %}out-of-stock{% endif %}">
           <td>{{ material.name }}</td>
           <td>{{ material.description }}</td>
           <td>{{ material.stock }}</td>  <!-- Adjusted to stock instead of quantity -->
@@ -65,8 +69,8 @@
           <td>{{ material.supplier }}</td>
           <td class="d-flex justify-content-between">
             <a href="{% url 'update_material' material.pk %}" class="btn btn-warning btn-sm w-100 mr-2">Edit Details</a>
-            <a href="{% url 'stock_material' material.pk %}" class="btn btn-success btn-sm w-100 mr-2">Restock</a>
-            <a href="{% url 'delete_material' material.pk %}" class="btn btn-danger btn-sm w-100">Delete</a>
+            <a href="{% url 'stock_material' material.pk %}" class="btn btn-success btn-sm w-100 mr-2">Update Stock</a>
+            <a href="{% url 'delete_material' material.pk %}" class="btn btn-danger btn-sm w-100">Delete Item</a>
           </td>
         </tr>
       {% endfor %}
@@ -76,33 +80,33 @@
   <!-- Pagination Controls -->
   <div class="pagination-container">
       <ul class="pagination justify-content-center">
-        {% if materials.has_previous %}
+        {% if page_obj.has_previous %}
           <li class="page-item">
             <a class="page-link" href="?q={{ request.GET.q }}&page=1" aria-label="First">
               <span aria-hidden="true">&laquo;&laquo;</span>
             </a>
           </li>
           <li class="page-item">
-            <a class="page-link" href="?q={{ request.GET.q }}&page={{ materials.previous_page_number }}" aria-label="Previous">
+            <a class="page-link" href="?q={{ request.GET.q }}&page={{ page_obj.previous_page_number }}" aria-label="Previous">
               <span aria-hidden="true">&laquo;</span>
             </a>
           </li>
         {% endif %}
 
-        {% if materials.paginator.num_pages > 1 %}
+        {% if page_obj.paginator.num_pages > 1 %}
           <li class="page-item disabled">
-            <span class="page-link">Page {{ materials.number }} of {{ materials.paginator.num_pages }}</span>
+            <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
           </li>
         {% endif %}
 
-        {% if materials.has_next %}
+        {% if page_obj.has_next %}
           <li class="page-item">
-            <a class="page-link" href="?q={{ request.GET.q }}&page={{ materials.next_page_number }}" aria-label="Next">
+            <a class="page-link" href="?q={{ request.GET.q }}&page={{ page_obj.next_page_number }}" aria-label="Next">
               <span aria-hidden="true">&raquo;</span>
             </a>
           </li>
           <li class="page-item">
-            <a class="page-link" href="?q={{ request.GET.q }}&page={{ materials.paginator.num_pages }}" aria-label="Last">
+            <a class="page-link" href="?q={{ request.GET.q }}&page={{ page_obj.paginator.num_pages }}" aria-label="Last">
               <span aria-hidden="true">&raquo;&raquo;</span>
             </a>
           </li>

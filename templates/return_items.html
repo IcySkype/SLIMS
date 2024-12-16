@@ -2,14 +2,17 @@
 
 {% block content %}
 <div class="container">
-    <h2>Return Items for Request {{ material_request.control_number }}</h2>
-
+    {% if material_request.request.status == 'borrowed' %}
+    <h2>Return Items for Control Number {{ material_request.request.control_number }}</h2>
+    {% elif material_request.request.status == 'liable' %}
+    <h2>Comply Liabilities for Control No. {{ material_request.request.control_number }}</h2>
+    {% endif %}
     <h3>Request Details</h3>
     <ul>
-        <li><strong>Control Number:</strong> {{ material_request.control_number }}</li>
+        <li><strong>Control Number:</strong> {{ material_request.request.control_number }}</li>
         <li><strong>Subject:</strong> {{ material_request.subject }}</li>
         <li><strong>Title:</strong> {{ material_request.title_of_experiment }}</li>
-        <li><strong>Status:</strong> {{ material_request.get_status_display }}</li>
+        <li><strong>Status:</strong> {{ material_request.request.get_status_display }}</li>
     </ul>
 
     <form method="post">
@@ -25,13 +28,16 @@
             <tbody>
                 {% for material_in_request in materials_in_request %}
                 <tr>
-                    <td>{{ material_in_request.material.name }}</td>
+                    <td>{{ material_in_request.item.name }}</td>
                     <td>{{ material_in_request.get_status_display }}</td>
                     <td>
                         <select name="status_{{ material_in_request.id }}">
-                            <option value="returned" {% if material_in_request.status == 'returned' %}selected{% endif %}>Returned</option>
-                            <option value="broken" {% if material_in_request.status == 'broken' %}selected{% endif %}>Broken</option>
+                            {% if material_in_request.item.material_type == 'reagent' %}
                             <option value="used" {% if material_in_request.status == 'used' %}selected{% endif %}>Used</option>
+                            {% else %}
+                            <option value="returned" {% if material_in_request.status == 'returned' %}selected{% endif %}>Returned</option>
+                            <option value="broken" {% if material_in_request.status == 'broken' %}selected{% endif %}>Broken/Lost</option>
+                            {% endif %}
                         </select>
                     </td>
                 </tr>

@@ -54,6 +54,11 @@ MIDDLEWARE = [
     #'borrow.middlewares.ExpiredLabApparelRequestMiddleware',
 ]
 
+TIME_ZONE = 'Asia/Manila'
+USE_I18N = True
+USE_L10N = True
+USE_TZ = False
+
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 SESSION_COOKIE_NAME = 'sessionid'
 

@@ -16,6 +16,10 @@
             {{wizard.form.subject}}
         </div>
         <div class="form-field">
+            <label for="department">Department</label>
+            {{wizard.form.department}}
+        </div>
+        <div class="form-field">
             <label for="experiment-no">Experiment No.</label>
             {{wizard.form.experiment_number}}
         </div>
@@ -23,24 +27,23 @@
             <label for="group-no">Group No.</label>
             {{wizard.form.group_number}}
         </div>
+        
         <div class="form-field">
-            <label for="department">Department</label>
-            {{wizard.form.department}}
-        </div>
-        <div class="form-field">
-            <label for="title-experiment">Title Experiment</label>
+            <label for="title-experiment">Title of Experiment</label>
             {{wizard.form.title_of_experiment}}
         </div>
         <div class="form-field">
             <label for="date-experiment">Date of Experiment</label>
-            {{wizard.form.date_of_experiment}}
+            {{wizard.form.request_on_date}}
         </div>
         <div class="form-field">
             <label for="time-experiment">Time of Experiment</label>
-            {{wizard.form.time_of_experiment}}
+            {{wizard.form.request_on_time}}
         </div>
+        <!--Hidden fields-->
             {{wizard.form.teacher}}
-    <button type="submit" class="proceed-button">Next</button>
+            <button type="submit" class="btn btn-block" style="background-color: #ff3399; color: white; margin-top: 20px;">Next</button>
+
 </form>
 </div>
 {% endblock %}
