@@ -170,18 +170,16 @@ class MaterialRequestForm(forms.ModelForm):
             else:
                 self.fields['teacher'].queryset = User.objects.filter(user_type='teacher')
 
-    def clean(self):
-        cleaned_data = super().clean()
-        request_on_date = cleaned_data.get('request_on_date')
+    def clean_request_on_date(self):
+        request_on_date = self.cleaned_data['request_on_date']
         
-        # Check if the user is anonymous/guest user and validate the date
         user = self.initial.get('user', None)
         if user and user.is_authenticated is False:
             # Ensure request_on_date is at least 2 days in the future
             if request_on_date and request_on_date < timezone.now().date() + timezone.timedelta(days=2):
                 raise ValidationError('The request date must be at least 2 days from today for student users.')
 
-        return cleaned_data
+        return request_on_date
 
     def save(self, commit=True):
         material_request = super().save(commit=False)
@@ -244,7 +242,7 @@ class MaterialInRequestForm(forms.ModelForm):
 MaterialInRequestFormSet = modelformset_factory(
     ItemInRequest,
     form=MaterialInRequestForm,
-    extra=1,
+    extra=0,
     can_delete=True
 )
 

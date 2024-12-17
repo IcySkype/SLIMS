@@ -74,8 +74,8 @@ class MaterialsRequestWizard(SessionWizardView):
                         'contact_number': form.cleaned_data['contact_number']
                     }
                 )
+                print(student)
                 group_members.append(student)
-
         if group_members:
             leader = group_members[0]
             group = Group.objects.create(materials_request=material_request, leader=leader)

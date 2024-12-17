@@ -8,6 +8,7 @@ urlpatterns = [
     path('materials/<int:pk>/stock/', view=views.StockMaterialView.as_view(), name='stock_material'),
     path('materials/<int:pk>/delete/', view=views.DeleteMaterialView.as_view(), name='delete_material'),
     path('get-material-details/', view=views.get_material_details, name='get_material_details'), #AJAX server side request
+    path('search-materials/', views.search_materials, name='search-materials'),#AJAX
 
     path('borrow/', view=borrow_views.MaterialsRequestWizard.as_view(), name='borrow'),
     path('borrow/success/<int:control_number>', view=borrow_views.material_request_success, name='material_request_success'),

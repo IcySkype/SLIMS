@@ -32,8 +32,10 @@
             <label for="title-experiment">Title of Experiment</label>
             {{wizard.form.title_of_experiment}}
         </div>
-        <div class="form-field">
-            <label for="date-experiment">Date of Experiment</label>
+        <div class="form-field {% if wizard.form.request_on_date.errors %}text-danger{% endif %}">
+            <label for="date-experiment">Date of Experiment {% if wizard.form.request_on_date.errors %}{% for error in wizard.form.request_on_date.errors %}
+                ({{ error }})
+            {% endfor %}{% endif %}</label>
             {{wizard.form.request_on_date}}
         </div>
         <div class="form-field">
@@ -44,6 +46,13 @@
             <label for="teacher">Teacher</label>
             {{wizard.form.teacher}}
         </div>
+        {% if wizard.form.request_on_date.errors %}
+                <div class="invalid-feedback">
+                    {% for error in wizard.form.request_on_date.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
             <button type="submit" class="btn btn-block" style="background-color: #ff3399; color: white; margin-top: 20px;">Next</button>
 
 </form>
