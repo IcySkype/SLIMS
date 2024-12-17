@@ -66,46 +66,57 @@
 {% block extra_scripts %}
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        const addMemberButton = document.getElementById("add-member-btn");
-        const membersTable = document.getElementById("members-table");
+    const addMemberButton = document.getElementById("add-member-btn");
+    const membersTable = document.getElementById("members-table");
+    const totalFormsInput = document.querySelector('[name="3-TOTAL_FORMS"]'); // Corrected selector
 
-        addMemberButton.addEventListener("click", function () {
-            // Clone the last row in the table
-            const lastRow = membersTable.querySelector("tr:last-child");
-            const newRow = lastRow.cloneNode(true);
+    if (!totalFormsInput) {
+        console.error("TOTAL_FORMS input not found!");
+        return;
+    }
 
-            // Clear input values in the cloned row
-            newRow.querySelectorAll("input").forEach(input => {
-                input.value = "";
-                const name = input.name.replace(/-\d+-/, `-${membersTable.children.length}-`);
-                input.name = name;
-                input.id = name;
-            });
+    addMemberButton.addEventListener("click", function () {
+        const totalFormsCount = parseInt(totalFormsInput.value, 10);
 
-            // Update the role column
-            const roleCell = newRow.querySelector("td:first-child");
-            roleCell.textContent = "Member";
+        const lastRow = membersTable.querySelector("tr:last-child");
+        if (!lastRow) {
+            alert("No rows found to clone!");
+            return;
+        }
 
-            // Add remove button if it doesn't exist
-            const actionCell = newRow.querySelector("td:last-child");
-            if (!actionCell.querySelector(".remove-member-btn")) {
-                const removeBtn = document.createElement("button");
-                removeBtn.type = "button";
-                removeBtn.className = "btn btn-sm btn-danger remove-member-btn";
-                removeBtn.textContent = "Remove";
-                actionCell.appendChild(removeBtn);
-            }
-
-            // Append the new row to the table
-            membersTable.appendChild(newRow);
+        const newRow = lastRow.cloneNode(true);
+        newRow.querySelectorAll("input").forEach(input => {
+            input.value = ""; // Clear value
+            const name = input.name.replace(/-\d+-/, `-${totalFormsCount}-`);
+            input.name = name;
+            input.id = name;
         });
 
-        membersTable.addEventListener("click", function (event) {
-            if (event.target.classList.contains("remove-member-btn")) {
-                const row = event.target.closest("tr");
-                membersTable.removeChild(row);
-            }
-        });
+        const roleCell = newRow.querySelector("td:first-child");
+        roleCell.textContent = "Member";
+
+        const actionCell = newRow.querySelector("td:last-child");
+        if (!actionCell.querySelector(".remove-member-btn")) {
+            const removeBtn = document.createElement("button");
+            removeBtn.type = "button";
+            removeBtn.className = "btn btn-sm btn-danger remove-member-btn";
+            removeBtn.textContent = "Remove";
+            actionCell.appendChild(removeBtn);
+        }
+
+        membersTable.appendChild(newRow);
+        totalFormsInput.value = totalFormsCount + 1;
     });
+
+    membersTable.addEventListener("click", function (event) {
+        if (event.target.classList.contains("remove-member-btn")) {
+            const row = event.target.closest("tr");
+            membersTable.removeChild(row);
+            totalFormsInput.value = parseInt(totalFormsInput.value, 10) - 1;
+        }
+    });
+});
+
+
 </script>
 {% endblock %}

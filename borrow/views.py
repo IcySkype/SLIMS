@@ -7,6 +7,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse, HttpResponse, HttpResponseForbidden
 from formtools.wizard.views import SessionWizardView
 from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
 import re
 
 
@@ -80,6 +81,19 @@ def get_material_details(request):
         except Material.DoesNotExist:
             return JsonResponse({'error': 'Material not found'}, status=404)
     return JsonResponse({'error': 'Invalid request'}, status=400)
+
+@csrf_exempt
+def search_materials(request):
+    if request.method == "GET":
+        query = request.GET.get('q', '').strip()  # Get the search query
+        materials = Material.objects.filter(
+            Q(name__icontains=query) |
+            Q(description__icontains=query) |
+            Q(material_type__icontains=query)
+        ).values('id', 'name', 'description', 'material_type')[:20]  # Limit results
+        return JsonResponse({'materials': list(materials)}, safe=False)
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
 
 #view requests:
 class RequestListView(ListView):
@@ -275,7 +289,7 @@ def return_items(request, control_number):
                 )
 
         # If any item is returned, update the MaterialRequest status to 'returned'
-        if all(item.status == 'returned' for item in materials_in_request):
+        if all(item.status in ['returned', 'used'] for item in materials_in_request):
             material_request.request.status = 'returned'
             liabilities = Liability.objects.filter(request=material_request.request)
             if liabilities.exists():

@@ -8,48 +8,13 @@
 <div class="dashboard-grid">
     <!-- Top row: Class Schedule and Request Overview -->
     <div class="top-row">
-        <div class="card">
-            <h3>Class Schedule</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Subject</th>
-                        <th>Material</th>
-                        <th>Type</th>
-                        <th>Time</th>
-                        <th>Date</th>
-                        <th>Data</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Table rows for class schedule -->
-                </tbody>
-            </table>
-        </div>
-        <div class="card request-overview">
-            <h3>Request Overview</h3>
-            <p>82 Gowns, 173 Materials, 110 Borrow, 40 Return</p>
-        </div>
-    </div>
-    <div class="bottom-row">
-        <div class="card">
-            <h3>Request List</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Control ID</th>
-                        <th>Name</th>
-                        <th>Subject</th>
-                        <th>Time Schedule</th>
-                        <th>Time of Request</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Table rows for request list -->
-                </tbody>
-            </table>
-            <a href="#">See All</a>
+        
+        <div class="col-lg-12 col-md-12">
+            <div class="card p-3">
+                <h3>Request Overview</h3>
+                <p>There's {{requestcount}} requests scheduled for this week.</p>
+                <p>{{m_count}} material requisition requests need your approval.</p>
+            </div>
         </div>
     </div>
 </div>

@@ -70,7 +70,25 @@ def dashboard_view(request):
     week_end = today + timedelta(days=6)
 
     if request.user.user_type == 'teacher':
-        return render(request, 'teacher-dashboard.html')
+        start_of_week = today - timedelta(days=today.weekday())
+        end_of_week = start_of_week + timedelta(days=6)
+        statuses = ['pending_approval', 'approved']
+        requests = Request.objects.filter(
+            request_on_date__range=[start_of_week, end_of_week],
+            request_type='material',
+            status__in=statuses
+        ).exclude(
+            Q(status='denied') | Q(status='returned')
+        ).order_by('request_on_date', 'request_on_time')
+        request_m_count = requests.filter(status='pending_approval').count()
+        requestcount = requests.count()
+        context = {
+            'week_start': start_of_week,
+            'week_end': end_of_week,
+            'requestcount': requestcount,
+            'm_count': request_m_count,
+        }
+        return render(request, 'teacher-dashboard.html', context= context)
     elif request.user.user_type == 'lab_technician':
         # Get the start of the current week (Monday)
         start_of_week = today - timedelta(days=today.weekday())

@@ -42,6 +42,25 @@
     padding: 5px; /* Add padding for better appearance */
     box-sizing: border-box; /* Ensure proper spacing */
 }
+.search-container {
+    position: relative; /* Ensure the container is the reference point for positioning */
+}
+
+#search-results-wrapper {
+    position: absolute; /* Position relative to the search container */
+    top: 100%; /* Place directly below the search bar */
+    left: 0; /* Align with the left edge of the search bar */
+    width: 100%; /* Match the width of the search bar */
+    z-index: 1000; /* Ensure it appears above other elements */
+    background-color: white; /* Optional: Add a background color */
+    border: 1px solid #ddd; /* Optional: Add a border for visibility */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: Add a shadow for better appearance */
+}
+
+#search-results-table {
+    margin: 0; /* Remove default margin */
+    width: 100%; /* Ensure it takes up the full width */
+}
 </style>
 {% endblock %}
 
@@ -82,13 +101,25 @@
                     </tbody>
                 </table>
             </div>
-
-            <div class="d-flex justify-content-between mt-3">
-                <button type="button" id="add-item-btn" class="btn btn-primary btn-sm">+ Add Item to List</button>
+            <div class="search-container mb-3">
+                <input type="text" id="material-search-input" class="form-control" placeholder="Search materials...">
+                <div id="search-results-wrapper">
+                    <table class="table table-bordered table-hover custom-rounded-table" id="search-results-table" style="display: none;">
+                        <thead>
+                            <tr>
+                                <th>Item Name</th>
+                                <th>Description</th>
+                                <th>Type</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="search-results"></tbody>
+                    </table>
+                </div>
             </div>
-
             <button type="submit" class="btn btn-block" style="background-color: #ff3399; color: white;  margin-top: 20px;">Next</button>
         </form>
+        
     </div>
 </div>
 
@@ -96,100 +127,153 @@
 
 {% block extra_scripts %}
 <script>
-    document.getElementById("add-item-btn").addEventListener("click", function () {
-    const materialFields = document.getElementById("material-fields");
-    const listOfMaterials = document.getElementById("list-of-materials"); // Target tbody by its ID
-    const totalFormsInput = document.querySelector("#id_2-TOTAL_FORMS");
-    const totalForms = parseInt(totalFormsInput.value, 10);  // Get the current number of forms
+    document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.getElementById("material-search-input");
+    const resultsTable = document.getElementById("search-results-table");
+    const resultsBody = document.getElementById("search-results");
 
-    // Clone the last row (this is the row that serves as the template for new rows)
-    const lastRow = listOfMaterials.querySelector(".material-entry:last-child");
-    const newEntry = lastRow.cloneNode(true);  // Deep clone the last form
-
-    // Clear the cloned form's data (excluding the DELETE checkbox)
-    Array.from(newEntry.querySelectorAll("input, select")).forEach((field) => {
-        if (field.name.indexOf("DELETE") === -1) {  // Don't clear the DELETE field
-            field.value = "";  // Clear the input values
+    searchInput.addEventListener("input", function () {
+        const query = searchInput.value.trim();
+        if (query.length > 1) {
+            fetch(`/search-materials/?q=${query}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.materials) {
+                        resultsBody.innerHTML = ""; // Clear previous results
+                        data.materials.forEach(material => {
+                            const row = document.createElement("tr");
+                            row.innerHTML = `
+                                <td>${material.name}</td>
+                                <td>${material.description}</td>
+                                <td>${material.material_type}</td>
+                                <td><button type="button" class="btn btn-primary btn-sm add-item-btn" data-id="${material.id}" data-name="${material.name}" data-description="${material.description}" data-type="${material.material_type}">Add</button></td>
+                            `;
+                            resultsBody.appendChild(row);
+                        });
+                        resultsTable.style.display = "table"; // Show table
+                    }
+                });
+        } else {
+            resultsBody.innerHTML = ""; // Clear results
+            resultsTable.style.display = "none"; // Hide table
         }
     });
 
-    // Update the new entry's fields with the correct index
-    Array.from(newEntry.querySelectorAll("input, select")).forEach((field) => {
-        const fieldName = field.name;
-        const fieldId = field.id;
+    // Add "Add" button functionality
+    document.querySelector("#search-results").addEventListener("click", function (event) {
+    if (event.target.matches(".add-item-btn")) {
+        const itemData = event.target.dataset;
 
-        if (fieldName) {
-            // Update the `name` attribute using the next index
-            field.name = updateFormFieldIndex(field.name, totalForms);
-        }
+            // Add new row to the formset table
+            const materialFields = document.getElementById("material-fields");
+            const totalFormsInput = document.querySelector("#id_2-TOTAL_FORMS");
+            const totalForms = parseInt(totalFormsInput.value, 10);
 
-        if (fieldId) {
-            // Update the `id` attribute using the next index
-            field.id = updateFormFieldIndex(field.id, totalForms);
+            const newRow = document.createElement("tr");
+            newRow.className = "material-entry";
+            newRow.innerHTML = `
+            <td>
+                <select name="2-${totalForms}-item" id="id_2-${totalForms}-item">
+                    <option value="${itemData.id}" selected>${itemData.name}</option>
+                </select>
+            </td>
+            <td><input type="text" name="2-${totalForms}-material_type" id="id_2-${totalForms}-material_type" value="${itemData.type}" readonly></td>
+            <td><input type="text" name="2-${totalForms}-material_description" id="id_2-${totalForms}-material_description" value="${itemData.description}" readonly></td>
+            <select name="2-${totalForms}-unit" id="id_2-${totalForms}-unit">
+                    ${getUnitOptions(itemData.type)}
+            </select>
+            <td><input type="number" name="2-${totalForms}-quantity" id="id_2-${totalForms}-quantity" min=1 value="1"></td>
+            <td><button type="button" class="btn btn-danger btn-sm remove-item-btn">-</button></td>
+            `;
+
+            materialFields.querySelector("tbody").appendChild(newRow);
+            totalFormsInput.value = totalForms + 1;
+
+            // Add remove functionality to the new row
+            newRow.querySelector(".remove-item-btn").addEventListener("click", function () {
+                newRow.remove();
+                updateFormIndices();
+            });
+
+            // Clear the search input and hide results
+            searchInput.value = "";
+            resultsBody.innerHTML = "";
+            resultsTable.style.display = "none";
         }
     });
-
-    // Append the new row to the table's tbody
-    listOfMaterials.appendChild(newEntry);
-
-    // Increment the total forms count
-    totalFormsInput.value = totalForms + 1;
-
-    // Update the "remove" button for the new row
-    const removeBtn = newEntry.querySelector(".remove-item-btn");
-    removeBtn.addEventListener("click", function () {
-        newEntry.remove();
-        updateFormIndices();  // Reindex the remaining forms
-    });
-
-    // Ensure the "remove" button is working for the initial row as well
-    toggleRemoveButtons();
 });
 
-// Update the form indices when a row is removed
+function getUnitOptions(materialType) {
+    switch (materialType) {
+        case "equipment":
+            return `<option value="None">N/A</option>`;
+        case "material":
+            return `<option value="g">Grams</option><option value="mg">Milligrams</option>`;
+        case "reagent":
+            return `<option value="mL">Milliliters</option><option value="L">Liters</option>`;
+    }
+}
+</script>
+<script>
+    
+
+// Function to handle row removal
+document.querySelectorAll(".remove-item-btn").forEach((button) => {
+    button.addEventListener("click", function () {
+        const row = this.closest(".material-entry");
+        row.remove();
+        updateFormIndices();
+    });
+});
+
+// Function to update form indices after a row is removed
 function updateFormIndices() {
     const rows = document.querySelectorAll(".material-entry");
     const totalFormsInput = document.querySelector("#id_2-TOTAL_FORMS");
+    let index = 0;
 
-    // Update the indices for each row's fields
-    rows.forEach((row, index) => {
-        Array.from(row.querySelectorAll("input, select")).forEach((field) => {
-            // Update the `id` and `name` attributes to reflect the new index
-            if (field.id) {
-                field.id = field.id.replace(/-\d+-/, `-${index}-`);
+    rows.forEach((row) => {
+        const regex = new RegExp(`form-(\\d+)-`, "g");
+        row.innerHTML = row.innerHTML.replace(regex, `form-${index}-`);
+
+        Array.from(row.querySelectorAll("[id], [name]")).forEach((element) => {
+            if (element.id) {
+                element.id = element.id.replace(regex, `form-${index}-`);
             }
-            if (field.name) {
-                field.name = field.name.replace(/-\d+-/, `-${index}-`);
+            if (element.name) {
+                element.name = element.name.replace(regex, `form-${index}-`);
             }
         });
+        index++;
     });
 
-    // Update the total forms count
+    // Update TOTAL_FORMS count
     totalFormsInput.value = rows.length;
 
-    // Check visibility of "-" buttons (disable/remove them when only 1 row exists)
+    // Check visibility of "-" buttons
     toggleRemoveButtons();
 }
 
-// Function to enable or disable "remove" buttons based on row count
+// Function to toggle the visibility/enablement of "-" buttons
 function toggleRemoveButtons() {
     const rows = document.querySelectorAll(".material-entry");
     const removeButtons = document.querySelectorAll(".remove-item-btn");
 
-    if (rows.length <= 1) {
-        removeButtons.forEach((button) => button.disabled = true); // Disable remove buttons when there's 1 row
+    if (rows.length === 1) {
+        // If there's only one row, disable or hide the "-" button
+        removeButtons.forEach((button) => {
+            button.disabled = true; // Or use button.style.display = 'none';
+        });
     } else {
-        removeButtons.forEach((button) => button.disabled = false); // Enable remove buttons
+        // Enable/show "-" buttons if there are multiple rows
+        removeButtons.forEach((button) => {
+            button.disabled = false; // Or use button.style.display = 'inline';
+        });
     }
 }
 
 // Initial check on page load
 toggleRemoveButtons();
-
-// Helper function to update the name and id based on the index
-function updateFormFieldIndex(field, index) {
-    return field.replace(/-\d+-/, `-${index}-`);
-}
 
 </script>
 <script>
